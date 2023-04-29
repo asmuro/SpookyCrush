@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,9 @@ public class Piece : MonoBehaviour
     public const float DEPTH = -0.1f;
     public float Speed = 100;
 
-    private PieceSwapper _swapper;    
+    private Swiper _swapper;    
     private bool _isNull = false;
-    private const string SWAPPER = "Swapper";
+    
     private int _column;
     private int _row;
     private Vector3 _destinationPoint;
@@ -18,7 +19,7 @@ public class Piece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _swapper = GameObject.FindGameObjectWithTag(SWAPPER).GetComponent<PieceSwapper>();
+        _swapper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
         this._destinationPoint = transform.position;
     }
 
