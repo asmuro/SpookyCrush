@@ -11,8 +11,12 @@ public class PieceSwapper : MonoBehaviour
 
     private const int RIGHT_MAX_SWAP_ANGLE = 45;
     private const int RIGHT_MIN_SWAP_ANGLE = -45;
-    private const int UP_MAX_SWAP_ANGLE = 136;
+    private const int UP_MAX_SWAP_ANGLE = 135;
     private const int UP_MIN_SWAP_ANGLE = 45;
+    private const int LEFT_MIN_POSITIVE_SWAP_ANGLE = 135;
+    private const int LEFT_MIN_NEGATIVE_SWAP_ANGLE = -135;
+    private const int DOWN_MAX_SWAP_ANGLE = -45;
+    private const int DOWN_MIN_SWAP_ANGLE = -135;
     private const string BOARD = "Board";
 
     // Start is called before the first frame update
@@ -46,37 +50,38 @@ public class PieceSwapper : MonoBehaviour
     public void SwapPiece(Piece currentPiece)
     {
         var swipeAngle = CalculateAngleBetweenFirstAndFinalPosition();
-        Debug.Log(swipeAngle);
-        if (this.ShouldSwapRight(swipeAngle))
-            this.SwapRight(currentPiece);
         
+        if (this.IsUpSwipe(swipeAngle))
+            board.SwapUp(currentPiece);
+        else if (this.IsDownSwipe(swipeAngle))
+            board.SwapDown(currentPiece);
+        else if (this.IsLeftSwipe(swipeAngle))
+            board.SwapLeft(currentPiece);
+        else if (this.IsRightSwipe(swipeAngle))
+            board.SwapRight(currentPiece);
     }
 
     #region ShouldSwap
 
-    private bool ShouldSwapUp(float swipeAngle)
+    private bool IsUpSwipe(float swipeAngle)
     {
         return (swipeAngle > UP_MIN_SWAP_ANGLE && swipeAngle <= UP_MAX_SWAP_ANGLE);
     }
 
-    private bool ShouldSwapRight(float swipeAngle)
+    private bool IsDownSwipe(float swipeAngle)
+    {
+        return (swipeAngle > DOWN_MIN_SWAP_ANGLE && swipeAngle <= DOWN_MAX_SWAP_ANGLE);
+    }
+
+    private bool IsLeftSwipe(float swipeAngle)
+    {
+        return (swipeAngle < LEFT_MIN_NEGATIVE_SWAP_ANGLE || swipeAngle > LEFT_MIN_POSITIVE_SWAP_ANGLE);
+    }
+
+    private bool IsRightSwipe(float swipeAngle)
     {
         return (swipeAngle > RIGHT_MIN_SWAP_ANGLE && swipeAngle <= RIGHT_MAX_SWAP_ANGLE);
-    }
+    }    
 
-    #endregion
-
-    #region Swap
-
-    private void SwapUp(Piece currentPiece)
-    {
-
-    }
-
-    private void SwapRight(Piece currentPiece)
-    {
-        board.RightSwap(currentPiece);        
-    }
-
-    #endregion
+    #endregion    
 }

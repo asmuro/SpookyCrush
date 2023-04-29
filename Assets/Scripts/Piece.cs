@@ -25,13 +25,7 @@ public class Piece : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (this._destinationPoint != transform.position)
-        {
-            transform.position = new Vector3(
-                  Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
-                  Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
-                  Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
-        }
+        this.SmoothMove();        
     }
 
     private Vector3 CreatePositionToRenderTheNewPiece(Vector2 tilePosition)
@@ -71,6 +65,17 @@ public class Piece : MonoBehaviour
         this.transform.position = newPosition;
     }
 
+    private void SmoothMove()
+    {
+        if (this._destinationPoint != transform.position)
+        {
+            transform.position = new Vector3(
+                  Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
+                  Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
+                  Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
+        }
+    }
+
     #region Accessors
 
     public bool IsNull()
@@ -86,6 +91,7 @@ public class Piece : MonoBehaviour
     public void SetColumn(int column)
     {
         this._column = column;
+        this.UpdateName();
     }
 
     public int GetRow()
@@ -96,6 +102,12 @@ public class Piece : MonoBehaviour
     public void SetRow(int row)
     {
         this._row = row;
+        this.UpdateName();
+    }
+
+    private void UpdateName()
+    {
+        this.name = $"{nameof(Piece)} ( {this._column}, {this._row} )";
     }
 
     public void SetDestination(Vector3 destination)
