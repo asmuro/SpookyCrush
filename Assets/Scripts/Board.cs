@@ -80,43 +80,159 @@ public class Board : MonoBehaviour
         return Dots[UnityEngine.Random.Range(0, Dots.Length)];
     }
 
-    public Piece GetRightPiece(Piece currentPiece)
-    {
-        for (int i = 0; i < Width; i++)
-        {
-            for (int j = 0; j < Height; j++)
-            {
-                if (currentPiece == AllPieces[i, j] && i < Width)
-                    return AllPieces[i + 1, j];                
-            }
-        }
+    #region Swap
 
-        return Piece.CreateNullPiece();
+    #region UpSwap
+
+    public void SwapUp(Piece currentPiece)
+    {
+        if (this.CanSwapUp(currentPiece))
+        {
+            var upPiece = GetUpperPiece(currentPiece);
+
+            UpSwapUpdateMatrix(currentPiece, upPiece);
+            UpSwapPieceColumnAndRow(currentPiece, upPiece);
+            SwapPiecesRenderPositions(currentPiece, upPiece);
+        }
     }
 
-    public void RightSwap(Piece currentPiece)
+    private bool CanSwapUp(Piece currentPiece)
     {
-        if(currentPiece.GetColumn() < (Width - 1))
-        {
-            var rightPiece = AllPieces[currentPiece.GetColumn() + 1, currentPiece.GetRow()];
+        return currentPiece.GetRow() < Height - 1;
+    }
 
-            SwapPiecesMatrix(currentPiece, rightPiece);
-            SwapPieceColumnAndRow(currentPiece, rightPiece);            
+    private Piece GetUpperPiece(Piece currentPiece)
+    {
+        return AllPieces[currentPiece.GetColumn(), currentPiece.GetRow() + 1];
+    }
+
+    private void UpSwapUpdateMatrix(Piece currentPiece, Piece leftPiece)
+    {
+        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow()] = leftPiece;
+        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow() + 1] = currentPiece;
+    }
+
+    private void UpSwapPieceColumnAndRow(Piece currentPiece, Piece leftPiece)
+    {
+        currentPiece.SetRow(currentPiece.GetRow() + 1);
+        leftPiece.SetRow(leftPiece.GetRow() - 1);
+    }
+
+    #endregion
+
+    #region DownSwap
+
+    public void SwapDown(Piece currentPiece)
+    {
+        if (this.CanSwapDown(currentPiece))
+        {
+            var downPiece = GetDownPiece(currentPiece);
+
+            DownSwapUpdateMatrix(currentPiece, downPiece);
+            DownSwapPieceColumnAndRow(currentPiece, downPiece);
+            SwapPiecesRenderPositions(currentPiece, downPiece);
+        }
+    }
+
+    private bool CanSwapDown(Piece currentPiece)
+    {
+        return currentPiece.GetRow() > 0;
+    }
+
+    private Piece GetDownPiece(Piece currentPiece)
+    {
+        return AllPieces[currentPiece.GetColumn(), currentPiece.GetRow() - 1];
+    }
+
+    private void DownSwapUpdateMatrix(Piece currentPiece, Piece leftPiece)
+    {
+        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow()] = leftPiece;
+        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow() - 1] = currentPiece;
+    }
+
+    private void DownSwapPieceColumnAndRow(Piece currentPiece, Piece leftPiece)
+    {
+        currentPiece.SetRow(currentPiece.GetRow() - 1);
+        leftPiece.SetRow(leftPiece.GetRow() + 1);
+    }
+
+    #endregion
+
+    #region LeftSwap
+
+    public void SwapLeft(Piece currentPiece)
+    {
+        if (this.CanSwapLeft(currentPiece))
+        {
+            var leftPiece = GetLeftPiece(currentPiece);
+
+            LeftSwapUpdateMatrix(currentPiece, leftPiece);
+            LeftSwapPieceColumnAndRow(currentPiece, leftPiece);
+            SwapPiecesRenderPositions(currentPiece, leftPiece);
+        }
+    }
+
+    private bool CanSwapLeft(Piece currentPiece)
+    {
+        return currentPiece.GetColumn() > 0;
+    }
+
+    private Piece GetLeftPiece(Piece currentPiece)
+    {
+        return AllPieces[currentPiece.GetColumn() - 1, currentPiece.GetRow()];
+    }
+
+    private void LeftSwapUpdateMatrix(Piece currentPiece, Piece leftPiece)
+    {
+        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow()] = leftPiece;
+        AllPieces[currentPiece.GetColumn() - 1, currentPiece.GetRow()] = currentPiece;
+    }
+
+    private void LeftSwapPieceColumnAndRow(Piece currentPiece, Piece leftPiece)
+    {
+        currentPiece.SetColumn(currentPiece.GetColumn() - 1);
+        leftPiece.SetColumn(leftPiece.GetColumn() + 1);
+    }
+
+    #endregion
+
+    #region RightSwap
+
+    public void SwapRight(Piece currentPiece)
+    {
+        if(this.CanSwapRight(currentPiece))
+        {
+            var rightPiece = GetRightPiece(currentPiece);
+
+            RightSwapUpdateMatrix(currentPiece, rightPiece);
+            RightSwapPieceColumnAndRow(currentPiece, rightPiece);            
             SwapPiecesRenderPositions(currentPiece, rightPiece);
         }        
     }
 
-    private void SwapPieceColumnAndRow(Piece currentPiece, Piece rightPiece)
+    private bool CanSwapRight(Piece currentPiece)
+    {
+        return currentPiece.GetColumn() < (Width - 1);
+    }
+
+    private Piece GetRightPiece(Piece currentPiece)
+    {
+        return AllPieces[currentPiece.GetColumn() + 1, currentPiece.GetRow()];
+    }
+
+    private void RightSwapUpdateMatrix(Piece currentPiece, Piece rightPiece)
+    {
+        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow()] = rightPiece;
+        AllPieces[currentPiece.GetColumn() + 1, currentPiece.GetRow()] = currentPiece;
+    }
+
+    private void RightSwapPieceColumnAndRow(Piece currentPiece, Piece rightPiece)
     {
         currentPiece.SetColumn(currentPiece.GetColumn() + 1);        
         rightPiece.SetColumn(rightPiece.GetColumn() - 1);
     }
 
-    private void SwapPiecesMatrix(Piece currentPiece, Piece rightPiece)
-    {
-        AllPieces[currentPiece.GetColumn(), currentPiece.GetRow()] = rightPiece;
-        AllPieces[currentPiece.GetColumn() + 1, currentPiece.GetRow()] = currentPiece;
-    }
+    #endregion    
 
     private void SwapPiecesRenderPositions(Piece currentPiece, Piece rightPiece)
     {
@@ -125,4 +241,5 @@ public class Board : MonoBehaviour
         rightPiece.SetDestination(currentPiecePosition);                
     }
 
+    #endregion
 }
