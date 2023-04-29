@@ -1,87 +1,185 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections;
 using UnityEngine;
 
-public class PieceSwapper : MonoBehaviour
+namespace Assets.Scripts
 {
-    private Vector2 starterTouchPosition;
-    private Vector2 finalTouchPosition;
-    private Board board;
-
-    private const int RIGHT_MAX_SWAP_ANGLE = 45;
-    private const int RIGHT_MIN_SWAP_ANGLE = -45;
-    private const int UP_MAX_SWAP_ANGLE = 135;
-    private const int UP_MIN_SWAP_ANGLE = 45;
-    private const int LEFT_MIN_POSITIVE_SWAP_ANGLE = 135;
-    private const int LEFT_MIN_NEGATIVE_SWAP_ANGLE = -135;
-    private const int DOWN_MAX_SWAP_ANGLE = -45;
-    private const int DOWN_MIN_SWAP_ANGLE = -135;
-    private const string BOARD = "Board";
-
-    // Start is called before the first frame update
-    void Start()
+    public class PieceSwapper : MonoBehaviour
     {
-        board = GameObject.FindGameObjectWithTag(BOARD).GetComponent<Board>();
+        private Board board;
+
+        // Use this for initialization
+        void Start()
+        {
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<Board>();
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
+        #region Swap
+
+        #region UpSwap
+
+        public void SwapUp(Piece currentPiece)
+        {
+            if (this.CanSwapUp(currentPiece))
+            {
+                var upPiece = GetUpperPiece(currentPiece);
+
+                UpSwapUpdateMatrix(currentPiece, upPiece);
+                UpSwapPieceColumnAndRow(currentPiece, upPiece);
+                SwapPiecesRenderPositions(currentPiece, upPiece);
+            }
+        }
+
+        private bool CanSwapUp(Piece currentPiece)
+        {
+            return currentPiece.GetRow() < board.Height - 1;
+        }
+
+        private Piece GetUpperPiece(Piece currentPiece)
+        {
+            return board.GetPiece(currentPiece.GetColumn(), currentPiece.GetRow() + 1);
+        }
+
+        private void UpSwapUpdateMatrix(Piece currentPiece, Piece leftPiece)
+        {
+            board.SetPiece(currentPiece.GetColumn(), currentPiece.GetRow(), leftPiece);
+            board.SetPiece(currentPiece.GetColumn(), currentPiece.GetRow() + 1, currentPiece);
+        }
+
+        private void UpSwapPieceColumnAndRow(Piece currentPiece, Piece leftPiece)
+        {
+            currentPiece.SetRow(currentPiece.GetRow() + 1);
+            leftPiece.SetRow(leftPiece.GetRow() - 1);
+        }
+
+        #endregion
+
+        #region DownSwap
+
+        public void SwapDown(Piece currentPiece)
+        {
+            if (this.CanSwapDown(currentPiece))
+            {
+                var downPiece = GetDownPiece(currentPiece);
+
+                DownSwapUpdateMatrix(currentPiece, downPiece);
+                DownSwapPieceColumnAndRow(currentPiece, downPiece);
+                SwapPiecesRenderPositions(currentPiece, downPiece);
+            }
+        }
+
+        private bool CanSwapDown(Piece currentPiece)
+        {
+            return currentPiece.GetRow() > 0;
+        }
+
+        private Piece GetDownPiece(Piece currentPiece)
+        {
+            return board.GetPiece(currentPiece.GetColumn(), currentPiece.GetRow() - 1);
+        }
+
+        private void DownSwapUpdateMatrix(Piece currentPiece, Piece leftPiece)
+        {
+            board.SetPiece(currentPiece.GetColumn(), currentPiece.GetRow(), leftPiece);
+            board.SetPiece(currentPiece.GetColumn(), currentPiece.GetRow() - 1, currentPiece);
+        }
+
+        private void DownSwapPieceColumnAndRow(Piece currentPiece, Piece leftPiece)
+        {
+            currentPiece.SetRow(currentPiece.GetRow() - 1);
+            leftPiece.SetRow(leftPiece.GetRow() + 1);
+        }
+
+        #endregion
+
+        #region LeftSwap
+
+        public void SwapLeft(Piece currentPiece)
+        {
+            if (this.CanSwapLeft(currentPiece))
+            {
+                var leftPiece = GetLeftPiece(currentPiece);
+
+                LeftSwapUpdateMatrix(currentPiece, leftPiece);
+                LeftSwapPieceColumnAndRow(currentPiece, leftPiece);
+                SwapPiecesRenderPositions(currentPiece, leftPiece);
+            }
+        }
+
+        private bool CanSwapLeft(Piece currentPiece)
+        {
+            return currentPiece.GetColumn() > 0;
+        }
+
+        private Piece GetLeftPiece(Piece currentPiece)
+        {
+            return board.GetPiece(currentPiece.GetColumn() - 1, currentPiece.GetRow());
+        }
+
+        private void LeftSwapUpdateMatrix(Piece currentPiece, Piece leftPiece)
+        {
+            board.SetPiece(currentPiece.GetColumn(), currentPiece.GetRow(), leftPiece);
+            board.SetPiece(currentPiece.GetColumn() - 1, currentPiece.GetRow(), currentPiece);
+        }
+
+        private void LeftSwapPieceColumnAndRow(Piece currentPiece, Piece leftPiece)
+        {
+            currentPiece.SetColumn(currentPiece.GetColumn() - 1);
+            leftPiece.SetColumn(leftPiece.GetColumn() + 1);
+        }
+
+        #endregion
+
+        #region RightSwap
+
+        public void SwapRight(Piece currentPiece)
+        {
+            if (this.CanSwapRight(currentPiece))
+            {
+                var rightPiece = GetRightPiece(currentPiece);
+
+                RightSwapUpdateMatrix(currentPiece, rightPiece);
+                RightSwapPieceColumnAndRow(currentPiece, rightPiece);
+                SwapPiecesRenderPositions(currentPiece, rightPiece);
+            }
+        }
+
+        private bool CanSwapRight(Piece currentPiece)
+        {
+            return currentPiece.GetColumn() < (board.Width - 1);
+        }
+
+        private Piece GetRightPiece(Piece currentPiece)
+        {
+            return board.GetPiece(currentPiece.GetColumn() + 1, currentPiece.GetRow());
+        }
+
+        private void RightSwapUpdateMatrix(Piece currentPiece, Piece rightPiece)
+        {
+            board.SetPiece(currentPiece.GetColumn(), currentPiece.GetRow(), rightPiece);
+            board.SetPiece(currentPiece.GetColumn() + 1, currentPiece.GetRow(), currentPiece);
+        }
+
+        private void RightSwapPieceColumnAndRow(Piece currentPiece, Piece rightPiece)
+        {
+            currentPiece.SetColumn(currentPiece.GetColumn() + 1);
+            rightPiece.SetColumn(rightPiece.GetColumn() - 1);
+        }
+
+        #endregion
+
+        private void SwapPiecesRenderPositions(Piece currentPiece, Piece rightPiece)
+        {
+            Vector3 currentPiecePosition = new Vector3(currentPiece.transform.position.x, currentPiece.transform.position.y, Piece.DEPTH);
+            currentPiece.SetDestination(new Vector3(rightPiece.transform.position.x, rightPiece.transform.position.y, Piece.DEPTH));
+            rightPiece.SetDestination(currentPiecePosition);
+        }
+
+        #endregion
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    #region Properties
-
-    public void SetStarterTouchPosition(Vector2 swipeStartPosition)
-    { this.starterTouchPosition = swipeStartPosition; }
-
-    public void SetFinalTouchPosition(Vector2 swipeFinalPosition)
-    { this.finalTouchPosition = swipeFinalPosition; }
-
-    #endregion
-
-    private float CalculateAngleBetweenFirstAndFinalPosition()
-    {
-        return Mathf.Atan2(finalTouchPosition.y - starterTouchPosition.y, finalTouchPosition.x - starterTouchPosition.x) * 180 / Mathf.PI;        
-        
-    }
-
-    public void SwapPiece(Piece currentPiece)
-    {
-        var swipeAngle = CalculateAngleBetweenFirstAndFinalPosition();
-        
-        if (this.IsUpSwipe(swipeAngle))
-            board.SwapUp(currentPiece);
-        else if (this.IsDownSwipe(swipeAngle))
-            board.SwapDown(currentPiece);
-        else if (this.IsLeftSwipe(swipeAngle))
-            board.SwapLeft(currentPiece);
-        else if (this.IsRightSwipe(swipeAngle))
-            board.SwapRight(currentPiece);
-    }
-
-    #region ShouldSwap
-
-    private bool IsUpSwipe(float swipeAngle)
-    {
-        return (swipeAngle > UP_MIN_SWAP_ANGLE && swipeAngle <= UP_MAX_SWAP_ANGLE);
-    }
-
-    private bool IsDownSwipe(float swipeAngle)
-    {
-        return (swipeAngle > DOWN_MIN_SWAP_ANGLE && swipeAngle <= DOWN_MAX_SWAP_ANGLE);
-    }
-
-    private bool IsLeftSwipe(float swipeAngle)
-    {
-        return (swipeAngle < LEFT_MIN_NEGATIVE_SWAP_ANGLE || swipeAngle > LEFT_MIN_POSITIVE_SWAP_ANGLE);
-    }
-
-    private bool IsRightSwipe(float swipeAngle)
-    {
-        return (swipeAngle > RIGHT_MIN_SWAP_ANGLE && swipeAngle <= RIGHT_MAX_SWAP_ANGLE);
-    }    
-
-    #endregion    
 }

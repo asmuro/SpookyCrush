@@ -386,8 +386,8 @@ GameObject:
   - component: {fileID: 1010716165}
   - component: {fileID: 1010716166}
   m_Layer: 0
-  m_Name: Swapper
-  m_TagString: Swapper
+  m_Name: Swiper
+  m_TagString: Swiper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -451,7 +451,7 @@ MonoBehaviour:
   Width: 7
   Height: 10
   TilePrefab: {fileID: 406799667134332673, guid: dc018abd4a2954542892282eae7b3944, type: 3}
-  Dots:
+  Pieces:
   - {fileID: -1673459638783610103, guid: a04cc16afc41d4d4b8621be5f5dfcb51, type: 3}
   - {fileID: -8325860817394376857, guid: ec5f94c8cec1ca24b993931e1e8fecb7, type: 3}
   - {fileID: 6226888324525707519, guid: 5c80411e3cc38a94ba15b4fd4024942b, type: 3}
@@ -479,9 +479,54 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1010716165}
+  - {fileID: 1932317121}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1932317120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1932317121}
+  - component: {fileID: 1932317122}
+  m_Layer: 0
+  m_Name: Piece Swapper
+  m_TagString: Swapper
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1932317121
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932317120}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1576786568}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1932317122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932317120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae887735906ccdd4d9f811f8ba56b048, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &326954449341720027
 PrefabInstance:
   m_ObjectHideFlags: 0
