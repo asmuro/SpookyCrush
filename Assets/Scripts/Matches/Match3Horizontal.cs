@@ -1,7 +1,4 @@
-﻿using Assets.Scripts.Interfaces;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Matches
 {
@@ -33,32 +30,32 @@ namespace Assets.Scripts.Matches
 
         private bool HasTwoAtTheRight(Piece piece)
         {
-            if (piece.GetColumn() == board.Width - 1) return false;
-            if (piece.GetColumn() == board.Width - 2) return false;
+            if (piece.GetColumn() == board.Width - 1) return piece.IsMatched();
+            if (piece.GetColumn() == board.Width - 2) return piece.IsMatched();
             if (board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag
                 && board.GetPiece(piece.GetColumn() + 2, piece.GetRow()).tag == piece.tag)
                 return true;
-            return false;
+            return piece.IsMatched();
         }
 
         private bool HasTwoAtTheLeft(Piece piece)
         {
-            if (piece.GetColumn() == 0) return false;
-            if (piece.GetColumn() == 1) return false;
+            if (piece.GetColumn() == 0) return piece.IsMatched();
+            if (piece.GetColumn() == 1) return piece.IsMatched();
             if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag
                 && board.GetPiece(piece.GetColumn() - 2, piece.GetRow()).tag == piece.tag)
                 return true;
-            return false;
+            return piece.IsMatched();
         }
 
         private bool HasOneOnEachSide(Piece piece)
         {
-            if (piece.GetColumn() == 0) return false;
-            if (piece.GetColumn() == board.Width - 1) return false;
+            if (piece.GetColumn() == 0) return piece.IsMatched();
+            if (piece.GetColumn() == board.Width - 1) return piece.IsMatched();
             if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag 
                 && board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag)
                 return true;
-            return false;
+            return piece.IsMatched();
         }       
 
         #endregion

@@ -1,9 +1,7 @@
 using Assets.Scripts;
-using Assets.Scripts.Matches;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Piece : MonoBehaviour
 {
@@ -15,6 +13,7 @@ public class Piece : MonoBehaviour
 
     private Swiper _swiper;
     private Swapper _swapper;
+    private Color _originalColor;
 
     private int _column;
     private int _row;
@@ -53,7 +52,11 @@ public class Piece : MonoBehaviour
         piece.transform.parent = parent.transform;
         piece._column = i;
         piece._row = j;
-        piece.name = $"{nameof(Piece)} ( {i}, {j} )";        
+        piece.name = $"{nameof(Piece)} ( {i}, {j} )";
+        piece._originalColor = new Color(piece.GetComponent<SpriteRenderer>().color.r,
+            piece.GetComponent<SpriteRenderer>().color.g,
+            piece.GetComponent<SpriteRenderer>().color.b,
+            piece.GetComponent<SpriteRenderer>().color.a);        
         return piece;
     }
 
@@ -87,12 +90,17 @@ public class Piece : MonoBehaviour
 
     private void SmoothMove()
     {
-        if (_destinationPoint != transform.position)
+        if (_destinationPoint != transform.position            )
         {
-            transform.position = new Vector3(
+            if (Vector2.Distance(_destinationPoint, this.transform.position) < 0.1)
+                transform.position = _destinationPoint;
+            else
+            {
+                transform.position = new Vector3(
                   Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
                   Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
                   Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
+            }
             if (!_swapping)
                 _swapping = true;
         }
@@ -124,14 +132,15 @@ public class Piece : MonoBehaviour
         _isMatched = isMatched;
         if (_isMatched)
         {
-            SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
+            SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();            
             sprite.color = new Color(0f, 0f, 0f, .2f);
         }
-        //else
-        //{
-        //    SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
-        //    sprite.color = new Color(1f, 1f, 1f, .2f);
-        //}
+        else
+        {
+            SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
+            if (sprite.color != _originalColor)
+                sprite.color = _originalColor;
+        }
     }
 
     public int GetColumn()
