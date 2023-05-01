@@ -1,4 +1,6 @@
 using Assets.Scripts;
+using Assets.Scripts.Matches;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,18 +10,24 @@ public class Piece : MonoBehaviour
     public float swipeAngle = 0;
     public const float DEPTH = -0.1f;
     public float Speed = 100;
+    public bool _isMatched = false;
+    public event EventHandler SwapFinished;
 
-    private Swiper _swapper;    
-    private bool _isNull = false;
-    
+    private Swiper _swiper;
+    private Swapper _swapper;
+
     private int _column;
     private int _row;
     private Vector3 _destinationPoint;
+    private bool _swapping = false;
+
+    #region MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
     {
-        _swapper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
+        _swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
+        _swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
         this._destinationPoint = transform.position;
     }
 
@@ -28,6 +36,10 @@ public class Piece : MonoBehaviour
     {
         this.SmoothMove();        
     }
+
+    #endregion
+
+    #region Constructors
 
     private Vector3 CreatePositionToRenderTheNewPiece(Vector2 tilePosition)
     {
@@ -45,43 +57,81 @@ public class Piece : MonoBehaviour
         return piece;
     }
 
+    #endregion
+
+    #region Swipe
+
     private void OnMouseDown()
     {
-        _swapper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));        
+        _swiper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));        
     }
 
     private void OnMouseUp()
     {
-        _swapper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        _swapper.SwapPiece(this);
+        _swiper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        this.SwapPiece();
     }
 
-    public static Piece CreateNullPiece()
+    #endregion
+
+    #region Swap
+
+    public void SwapPiece()
     {
-        return new Piece() { _isNull = true };        
+         _swapper.Swap(_swiper.GetSwipeDirection(), this);        
     }
 
-    public void SetPosition(Vector3 newPosition)
-    {
-        this.transform.position = newPosition;
-    }
+    #endregion
+
+    #region Movement
 
     private void SmoothMove()
     {
-        if (this._destinationPoint != transform.position)
+        if (_destinationPoint != transform.position)
         {
             transform.position = new Vector3(
                   Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
                   Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
                   Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
+            if (!_swapping)
+                _swapping = true;
+        }
+        else
+        {
+            if (_swapping)
+            {
+                _swapping = false;
+                SwapFinished.Invoke(null, EventArgs.Empty);
+            }                
         }
     }
 
+    #endregion
+    
     #region Accessors
 
-    public bool IsNull()
+    public void SetPosition(Vector3 newPosition)
     {
-        return _isNull;
+        this.transform.position = newPosition;
+    }    
+
+    public bool IsMatched()
+    {
+        return _isMatched;
+    }
+    public void SetIsMatched(bool isMatched)
+    {
+        _isMatched = isMatched;
+        if (_isMatched)
+        {
+            SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
+            sprite.color = new Color(0f, 0f, 0f, .2f);
+        }
+        //else
+        //{
+        //    SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
+        //    sprite.color = new Color(1f, 1f, 1f, .2f);
+        //}
     }
 
     public int GetColumn()

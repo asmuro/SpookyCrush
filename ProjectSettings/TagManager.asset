@@ -7,6 +7,20 @@ TagManager:
   - Swapper
   - Board
   - Swiper
+  - LightOrange
+  - DarkOrange
+  - LightPurple
+  - DarkestPurple
+  - Ocre
+  - Yellow
+  - Lemon
+  - Green
+  - DarkPurple
+  - LightGreen
+  - Teal
+  - DarkGreen
+  - Red
+  - MediumPurple
   layers:
   - Default
   - TransparentFX
