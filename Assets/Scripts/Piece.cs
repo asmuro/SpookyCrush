@@ -1,25 +1,32 @@
 using Assets.Scripts;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Piece : MonoBehaviour
 {
     public float swipeAngle = 0;
     public const float DEPTH = -0.1f;
     public float Speed = 100;
+    public bool _isMatched = false;
+    public event EventHandler SwapFinished;
 
-    private Swiper _swapper;    
-    private bool _isNull = false;
-    
+    private Swiper _swiper;
+    private Swapper _swapper;
+    private Color _originalColor;
+
     private int _column;
     private int _row;
     private Vector3 _destinationPoint;
+    private bool _swapping = false;
+
+    #region MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
     {
-        _swapper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
+        _swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
+        _swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
         this._destinationPoint = transform.position;
     }
 
@@ -28,6 +35,10 @@ public class Piece : MonoBehaviour
     {
         this.SmoothMove();        
     }
+
+    #endregion
+
+    #region Constructors
 
     private Vector3 CreatePositionToRenderTheNewPiece(Vector2 tilePosition)
     {
@@ -41,47 +52,95 @@ public class Piece : MonoBehaviour
         piece.transform.parent = parent.transform;
         piece._column = i;
         piece._row = j;
-        piece.name = $"{nameof(Piece)} ( {i}, {j} )";        
+        piece.name = $"{nameof(Piece)} ( {i}, {j} )";
+        piece._originalColor = new Color(piece.GetComponent<SpriteRenderer>().color.r,
+            piece.GetComponent<SpriteRenderer>().color.g,
+            piece.GetComponent<SpriteRenderer>().color.b,
+            piece.GetComponent<SpriteRenderer>().color.a);        
         return piece;
     }
 
+    #endregion
+
+    #region Swipe
+
     private void OnMouseDown()
     {
-        _swapper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));        
+        _swiper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));        
     }
 
     private void OnMouseUp()
     {
-        _swapper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        _swapper.SwapPiece(this);
+        _swiper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        this.SwapPiece();
     }
 
-    public static Piece CreateNullPiece()
+    #endregion
+
+    #region Swap
+
+    public void SwapPiece()
     {
-        return new Piece() { _isNull = true };        
+         _swapper.Swap(_swiper.GetSwipeDirection(), this);        
     }
+
+    #endregion
+
+    #region Movement
+
+    private void SmoothMove()
+    {
+        if (_destinationPoint != transform.position            )
+        {
+            if (Vector2.Distance(_destinationPoint, this.transform.position) < 0.1)
+                transform.position = _destinationPoint;
+            else
+            {
+                transform.position = new Vector3(
+                  Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
+                  Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
+                  Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
+            }
+            if (!_swapping)
+                _swapping = true;
+        }
+        else
+        {
+            if (_swapping)
+            {
+                _swapping = false;
+                SwapFinished.Invoke(null, EventArgs.Empty);
+            }                
+        }
+    }
+
+    #endregion
+    
+    #region Accessors
 
     public void SetPosition(Vector3 newPosition)
     {
         this.transform.position = newPosition;
-    }
+    }    
 
-    private void SmoothMove()
+    public bool IsMatched()
     {
-        if (this._destinationPoint != transform.position)
+        return _isMatched;
+    }
+    public void SetIsMatched(bool isMatched)
+    {
+        _isMatched = isMatched;
+        if (_isMatched)
         {
-            transform.position = new Vector3(
-                  Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
-                  Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
-                  Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
+            SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();            
+            sprite.color = new Color(0f, 0f, 0f, .2f);
         }
-    }
-
-    #region Accessors
-
-    public bool IsNull()
-    {
-        return _isNull;
+        else
+        {
+            SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
+            if (sprite.color != _originalColor)
+                sprite.color = _originalColor;
+        }
     }
 
     public int GetColumn()

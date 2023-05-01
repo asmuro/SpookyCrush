@@ -5,7 +5,7 @@ public class Swiper : MonoBehaviour
 {
     private Vector2 starterTouchPosition;
     private Vector2 finalTouchPosition;
-    private PieceSwapper swapper;
+    
 
     private const int RIGHT_MAX_SWAP_ANGLE = 45;
     private const int RIGHT_MIN_SWAP_ANGLE = -45;
@@ -20,7 +20,7 @@ public class Swiper : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<PieceSwapper>();
+        
     }
 
     // Update is called once per frame
@@ -43,20 +43,21 @@ public class Swiper : MonoBehaviour
     {
         return Mathf.Atan2(finalTouchPosition.y - starterTouchPosition.y, finalTouchPosition.x - starterTouchPosition.x) * 180 / Mathf.PI;        
         
-    }
-
-    public void SwapPiece(Piece currentPiece)
+    }   
+    
+    public Direction GetSwipeDirection()
     {
-        var swipeAngle = CalculateAngleBetweenFirstAndFinalPosition();
-        
+        var swipeAngle = this.CalculateAngleBetweenFirstAndFinalPosition();
+
         if (this.IsUpSwipe(swipeAngle))
-            swapper.SwapUp(currentPiece);
-        else if (this.IsDownSwipe(swipeAngle))
-            swapper.SwapDown(currentPiece);
-        else if (this.IsLeftSwipe(swipeAngle))
-            swapper.SwapLeft(currentPiece);
-        else if (this.IsRightSwipe(swipeAngle))
-            swapper.SwapRight(currentPiece);
+            return Direction.Up;
+        if (this.IsDownSwipe(swipeAngle))
+            return Direction.Down;
+        if (this.IsLeftSwipe(swipeAngle))
+            return Direction.Left;
+        else
+            return Direction.Right;
+        
     }
 
     #region ShouldSwap

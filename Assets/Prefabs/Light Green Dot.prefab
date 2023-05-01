@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3473315492199014792}
   m_Layer: 0
   m_Name: Light Green Dot
-  m_TagString: Untagged
+  m_TagString: LightGreen
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swipeAngle: 0
   Speed: 35
+  _isMatched: 0
 --- !u!58 &3473315492199014792
 CircleCollider2D:
   m_ObjectHideFlags: 0
