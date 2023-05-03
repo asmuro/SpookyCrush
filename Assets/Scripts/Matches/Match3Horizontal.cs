@@ -7,7 +7,9 @@ namespace Assets.Scripts.Matches
     /// </summary>
     public class Match3Horizontal : PieceMatcher
     {
-        private Board board;        
+        private Board board;
+        private const int FIRST_COLUMN = 0;
+        private const int SECOND_COLUMN = 1;
 
         // Use this for initialization
         void Start()
@@ -30,8 +32,12 @@ namespace Assets.Scripts.Matches
 
         private bool HasTwoAtTheRight(Piece piece)
         {
-            if (piece.GetColumn() == board.Width - 1) return piece.IsMatched();
-            if (piece.GetColumn() == board.Width - 2) return piece.IsMatched();
+            if (IsPieceInTheLastColumn(piece) ||
+                IsPieceInTheNextToLastColumn(piece) ||
+                board.GetPiece(piece.GetColumn() + 1, piece.GetRow()) == null ||
+                board.GetPiece(piece.GetColumn() + 2, piece.GetRow()) == null) 
+                return piece.IsMatched();
+            
             if (board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag
                 && board.GetPiece(piece.GetColumn() + 2, piece.GetRow()).tag == piece.tag)
                 return true;
@@ -40,8 +46,12 @@ namespace Assets.Scripts.Matches
 
         private bool HasTwoAtTheLeft(Piece piece)
         {
-            if (piece.GetColumn() == 0) return piece.IsMatched();
-            if (piece.GetColumn() == 1) return piece.IsMatched();
+            if (IsPieceInTheFirstColumn(piece) ||
+                IsPieceInTheSecondColumn(piece) ||
+                board.GetPiece(piece.GetColumn() - 1, piece.GetRow()) == null ||
+                board.GetPiece(piece.GetColumn() - 2, piece.GetRow()) == null) 
+                return piece.IsMatched();
+            
             if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag
                 && board.GetPiece(piece.GetColumn() - 2, piece.GetRow()).tag == piece.tag)
                 return true;
@@ -50,13 +60,37 @@ namespace Assets.Scripts.Matches
 
         private bool HasOneOnEachSide(Piece piece)
         {
-            if (piece.GetColumn() == 0) return piece.IsMatched();
-            if (piece.GetColumn() == board.Width - 1) return piece.IsMatched();
+            if (IsPieceInTheFirstColumn(piece) ||
+                IsPieceInTheLastColumn(piece) ||
+                board.GetPiece(piece.GetColumn() - 1, piece.GetRow()) == null ||
+                board.GetPiece(piece.GetColumn() + 1, piece.GetRow()) == null) 
+                return piece.IsMatched();
+            
             if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag 
                 && board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag)
                 return true;
             return piece.IsMatched();
         }       
+
+        private bool IsPieceInTheFirstColumn(Piece piece)
+        {
+            return piece.GetColumn() == FIRST_COLUMN;
+        }
+
+        private bool IsPieceInTheSecondColumn(Piece piece)
+        {
+            return piece.GetColumn() == SECOND_COLUMN;
+        }
+
+        private bool IsPieceInTheLastColumn(Piece piece)
+        {
+            return piece.GetColumn() == board.Width - 1;
+        }
+
+        private bool IsPieceInTheNextToLastColumn(Piece piece)
+        {
+            return piece.GetColumn() == board.Width - 2;
+        }
 
         #endregion
     }

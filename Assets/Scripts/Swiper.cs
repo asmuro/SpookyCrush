@@ -15,6 +15,7 @@ public class Swiper : MonoBehaviour
     private const int LEFT_MIN_NEGATIVE_SWAP_ANGLE = -135;
     private const int DOWN_MAX_SWAP_ANGLE = -45;
     private const int DOWN_MIN_SWAP_ANGLE = -135;
+    private const float SWIPE_TOLERANCE = 0.1f;
     
 
     // Start is called before the first frame update
@@ -42,8 +43,16 @@ public class Swiper : MonoBehaviour
     private float CalculateAngleBetweenFirstAndFinalPosition()
     {
         return Mathf.Atan2(finalTouchPosition.y - starterTouchPosition.y, finalTouchPosition.x - starterTouchPosition.x) * 180 / Mathf.PI;        
-        
     }   
+
+    public bool IsStartAndFinalPositionEquals()
+    {
+        if (Mathf.Abs(finalTouchPosition.y - starterTouchPosition.y) > SWIPE_TOLERANCE ||
+            Mathf.Abs(finalTouchPosition.x - starterTouchPosition.x) > SWIPE_TOLERANCE)
+            return false;
+        
+        return true;
+    }
     
     public Direction GetSwipeDirection()
     {
@@ -57,7 +66,6 @@ public class Swiper : MonoBehaviour
             return Direction.Left;
         else
             return Direction.Right;
-        
     }
 
     #region ShouldSwap

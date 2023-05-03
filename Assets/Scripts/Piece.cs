@@ -81,7 +81,8 @@ public class Piece : MonoBehaviour
 
     public void SwapPiece()
     {
-         _swapper.Swap(_swiper.GetSwipeDirection(), this);        
+        if (!_swiper.IsStartAndFinalPositionEquals())
+            _swapper.Swap(_swiper.GetSwipeDirection(), this);        
     }
 
     #endregion

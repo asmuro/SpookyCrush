@@ -30,8 +30,12 @@ namespace Assets.Scripts.Matches
 
         private bool HasTwoAbove(Piece piece)
         {
-            if (piece.GetRow() == board.Height - 1) return piece.IsMatched();
-            if (piece.GetRow() == board.Height - 2) return piece.IsMatched();
+            if (piece.GetRow() == board.Height - 1 ||
+                piece.GetRow() == board.Height - 2 ||
+                board.GetPiece(piece.GetColumn(), piece.GetRow() + 1) == null ||
+                board.GetPiece(piece.GetColumn(), piece.GetRow() + 2) == null)                 
+                return piece.IsMatched();
+            
             if (board.GetPiece(piece.GetColumn(), piece.GetRow() + 1).tag == piece.tag
                 && board.GetPiece(piece.GetColumn(), piece.GetRow() + 2).tag == piece.tag)
                 return true;
@@ -40,8 +44,12 @@ namespace Assets.Scripts.Matches
 
         private bool HasTwoUnder(Piece piece)
         {
-            if (piece.GetRow() == 0) return piece.IsMatched();
-            if (piece.GetRow() == 1) return piece.IsMatched();
+            if (piece.GetRow() == 0 ||
+                piece.GetRow() == 1 ||
+                board.GetPiece(piece.GetColumn(), piece.GetRow() - 1) == null ||
+                board.GetPiece(piece.GetColumn(), piece.GetRow() - 2) == null) 
+                return piece.IsMatched();
+            
             if (board.GetPiece(piece.GetColumn(), piece.GetRow() - 1).tag == piece.tag
                 && board.GetPiece(piece.GetColumn(), piece.GetRow() - 2).tag == piece.tag)
                 return true;
@@ -50,8 +58,12 @@ namespace Assets.Scripts.Matches
 
         private bool HasOneOnEachLevel(Piece piece)
         {
-            if (piece.GetRow() == 0) return piece.IsMatched();
-            if (piece.GetRow() == board.Height - 1) return piece.IsMatched();
+            if (piece.GetRow() == 0 ||
+                piece.GetRow() == board.Height - 1 ||
+                board.GetPiece(piece.GetColumn(), piece.GetRow() - 1) == null ||
+                board.GetPiece(piece.GetColumn(), piece.GetRow() + 1) == null) 
+                return piece.IsMatched();
+            
             if (board.GetPiece(piece.GetColumn(), piece.GetRow() - 1).tag == piece.tag 
                 && board.GetPiece(piece.GetColumn(), piece.GetRow() + 1).tag == piece.tag)
                 return true;
