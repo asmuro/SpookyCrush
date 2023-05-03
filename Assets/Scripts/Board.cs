@@ -93,15 +93,36 @@ public partial class Board : MonoBehaviour
 
     private void CreatePiece(Vector2 tilePosition, int i, int j)
     {
-        Piece prefabDotSelected = this.SelectDotToCreate();
-        Piece instance = prefabDotSelected.Instantiate(tilePosition, this.gameObject, i, j);
-        instance.SwapFinished += OnSwapFinished;
-        AllPieces[i, j] = instance;        
+        Piece instance = InstantiateFromPrefab(tilePosition, i, j);
+        while (WillCreateAMatch(instance))
+        {
+            instance = InstantiateFromPrefab(tilePosition, i, j);
+        }
+
+        instance.SwapFinished += OnSwapFinished;        
     }
 
-    private Piece SelectDotToCreate()
+    private Piece InstantiateFromPrefab(Vector2 tilePosition, int i, int j)
     {
-        return Pieces[Random.Range(0, Pieces.Length)];
+        Piece prefabPieceSelected = this.SelectPieceToCreate();
+        Piece instance = prefabPieceSelected.Instantiate(tilePosition, this.gameObject, i, j);
+        AllPieces[i, j] = instance;
+        return instance;
+    }
+
+    private Piece SelectPieceToCreate()
+    {        
+        return Pieces[Random.Range(0, Pieces.Length)]; ;
+    }    
+
+    private bool WillCreateAMatch(Piece piece)
+    {
+        foreach (PieceMatcher pieceMatcher in PieceMatchers)
+        {
+            if (pieceMatcher.IsMatch(piece))
+                return true;
+        }
+        return false;
     }
 
     #region Accessesors
