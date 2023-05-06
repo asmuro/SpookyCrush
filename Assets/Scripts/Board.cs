@@ -1,5 +1,6 @@
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Matches;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public partial class Board : MonoBehaviour
@@ -40,6 +41,7 @@ public partial class Board : MonoBehaviour
     {
         CleanMatches();
         RunMatches();
+        DestroyMatches();
     }
 
     #region Matches
@@ -48,7 +50,8 @@ public partial class Board : MonoBehaviour
     {
         foreach (var piece in AllPieces)
         {
-            piece.SetIsMatched(false);
+            if (piece)
+                piece.SetIsMatched(false);
         }
     }
 
@@ -56,9 +59,29 @@ public partial class Board : MonoBehaviour
     {
         foreach (var piece in AllPieces)
         {
-            foreach (PieceMatcher pieceMatcher in PieceMatchers)
+            if (piece)
             {
-                piece.SetIsMatched(pieceMatcher.IsMatch(piece));
+                foreach (PieceMatcher pieceMatcher in PieceMatchers)
+                {
+                    piece.SetIsMatched(pieceMatcher.IsMatch(piece));
+                }
+            }
+        }
+    }
+
+    private void DestroyMatches()
+    {
+        Piece piece;
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                piece = AllPieces[i,j];
+                if (piece && piece.GetIsMatched())
+                {
+                    piece.Destroy();
+                    AllPieces[i, j] = null;
+                }
             }
         }
     }

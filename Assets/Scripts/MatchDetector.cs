@@ -29,7 +29,7 @@ namespace Assets.Scripts
                 for (int j = 0; j < board.Height; j++)
                 {
                     Piece currentPiece = board.GetPiece(i, j);
-                    if (!currentPiece.IsMatched())
+                    if (!currentPiece.GetIsMatched())
                         DetectPieceMatch(currentPiece);
                 }
             }

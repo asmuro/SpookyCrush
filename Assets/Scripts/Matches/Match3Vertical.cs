@@ -34,12 +34,12 @@ namespace Assets.Scripts.Matches
                 piece.GetRow() == board.Height - 2 ||
                 board.GetPiece(piece.GetColumn(), piece.GetRow() + 1) == null ||
                 board.GetPiece(piece.GetColumn(), piece.GetRow() + 2) == null)                 
-                return piece.IsMatched();
+                return piece.GetIsMatched();
             
             if (board.GetPiece(piece.GetColumn(), piece.GetRow() + 1).tag == piece.tag
                 && board.GetPiece(piece.GetColumn(), piece.GetRow() + 2).tag == piece.tag)
                 return true;
-            return piece.IsMatched();
+            return piece.GetIsMatched();
         }
 
         private bool HasTwoUnder(Piece piece)
@@ -48,12 +48,12 @@ namespace Assets.Scripts.Matches
                 piece.GetRow() == 1 ||
                 board.GetPiece(piece.GetColumn(), piece.GetRow() - 1) == null ||
                 board.GetPiece(piece.GetColumn(), piece.GetRow() - 2) == null) 
-                return piece.IsMatched();
+                return piece.GetIsMatched();
             
             if (board.GetPiece(piece.GetColumn(), piece.GetRow() - 1).tag == piece.tag
                 && board.GetPiece(piece.GetColumn(), piece.GetRow() - 2).tag == piece.tag)
                 return true;
-            return piece.IsMatched();
+            return piece.GetIsMatched();
         }
 
         private bool HasOneOnEachLevel(Piece piece)
@@ -62,12 +62,12 @@ namespace Assets.Scripts.Matches
                 piece.GetRow() == board.Height - 1 ||
                 board.GetPiece(piece.GetColumn(), piece.GetRow() - 1) == null ||
                 board.GetPiece(piece.GetColumn(), piece.GetRow() + 1) == null) 
-                return piece.IsMatched();
+                return piece.GetIsMatched();
             
             if (board.GetPiece(piece.GetColumn(), piece.GetRow() - 1).tag == piece.tag 
                 && board.GetPiece(piece.GetColumn(), piece.GetRow() + 1).tag == piece.tag)
                 return true;
-            return piece.IsMatched();
+            return piece.GetIsMatched();
         }       
 
         #endregion

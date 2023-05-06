@@ -36,12 +36,12 @@ namespace Assets.Scripts.Matches
                 IsPieceInTheNextToLastColumn(piece) ||
                 board.GetPiece(piece.GetColumn() + 1, piece.GetRow()) == null ||
                 board.GetPiece(piece.GetColumn() + 2, piece.GetRow()) == null) 
-                return piece.IsMatched();
+                return piece.GetIsMatched();
             
             if (board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag
                 && board.GetPiece(piece.GetColumn() + 2, piece.GetRow()).tag == piece.tag)
                 return true;
-            return piece.IsMatched();
+            return piece.GetIsMatched();
         }
 
         private bool HasTwoAtTheLeft(Piece piece)
@@ -50,12 +50,12 @@ namespace Assets.Scripts.Matches
                 IsPieceInTheSecondColumn(piece) ||
                 board.GetPiece(piece.GetColumn() - 1, piece.GetRow()) == null ||
                 board.GetPiece(piece.GetColumn() - 2, piece.GetRow()) == null) 
-                return piece.IsMatched();
+                return piece.GetIsMatched();
             
             if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag
                 && board.GetPiece(piece.GetColumn() - 2, piece.GetRow()).tag == piece.tag)
                 return true;
-            return piece.IsMatched();
+            return piece.GetIsMatched();
         }
 
         private bool HasOneOnEachSide(Piece piece)
@@ -64,12 +64,12 @@ namespace Assets.Scripts.Matches
                 IsPieceInTheLastColumn(piece) ||
                 board.GetPiece(piece.GetColumn() - 1, piece.GetRow()) == null ||
                 board.GetPiece(piece.GetColumn() + 1, piece.GetRow()) == null) 
-                return piece.IsMatched();
+                return piece.GetIsMatched();
             
             if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag 
                 && board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag)
                 return true;
-            return piece.IsMatched();
+            return piece.GetIsMatched();
         }       
 
         private bool IsPieceInTheFirstColumn(Piece piece)

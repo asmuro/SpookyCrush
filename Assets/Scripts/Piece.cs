@@ -116,7 +116,16 @@ public class Piece : MonoBehaviour
     }
 
     #endregion
-    
+
+    #region Destroy
+
+    public void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
+
+    #endregion
+
     #region Accessors
 
     public void SetPosition(Vector3 newPosition)
@@ -124,10 +133,11 @@ public class Piece : MonoBehaviour
         this.transform.position = newPosition;
     }    
 
-    public bool IsMatched()
+    public bool GetIsMatched()
     {
         return _isMatched;
     }
+
     public void SetIsMatched(bool isMatched)
     {
         _isMatched = isMatched;

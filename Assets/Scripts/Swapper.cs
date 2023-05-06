@@ -23,20 +23,23 @@ namespace Assets.Scripts
 
         public void Swap(Direction direction, Piece piece)
         {
-            switch (direction)
+            if (piece)
             {
-                case Direction.Up:
-                    this.SwapUp(piece);
-                    break;
-                case Direction.Down:
-                    this.SwapDown(piece);
-                    break;
-                case Direction.Left:
-                    this.SwapLeft(piece);
-                    break;
-                default:
-                    this.SwapRight(piece);
-                    break;
+                switch (direction)
+                {
+                    case Direction.Up:
+                        this.SwapUp(piece);
+                        break;
+                    case Direction.Down:
+                        this.SwapDown(piece);
+                        break;
+                    case Direction.Left:
+                        this.SwapLeft(piece);
+                        break;
+                    default:
+                        this.SwapRight(piece);
+                        break;
+                }
             }
         }
 
@@ -47,10 +50,12 @@ namespace Assets.Scripts
             if (this.CanSwapUp(piece))
             {
                 var upPiece = GetUpperPiece(piece);
-
-                UpSwapUpdateMatrix(piece, upPiece);
-                UpSwapPieceColumnAndRow(piece, upPiece);
-                SwapPiecesRenderPositions(piece, upPiece);
+                if (upPiece)
+                {
+                    UpSwapUpdateMatrix(piece, upPiece);
+                    UpSwapPieceColumnAndRow(piece, upPiece);
+                    SwapPiecesRenderPositions(piece, upPiece);
+                }
             }
         }
 
@@ -85,10 +90,12 @@ namespace Assets.Scripts
             if (this.CanSwapDown(piece))
             {
                 var downPiece = GetDownPiece(piece);
-
-                DownSwapUpdateMatrix(piece, downPiece);
-                DownSwapPieceColumnAndRow(piece, downPiece);
-                SwapPiecesRenderPositions(piece, downPiece);
+                if (downPiece)
+                {
+                    DownSwapUpdateMatrix(piece, downPiece);
+                    DownSwapPieceColumnAndRow(piece, downPiece);
+                    SwapPiecesRenderPositions(piece, downPiece);
+                }
             }
         }
 
@@ -103,9 +110,9 @@ namespace Assets.Scripts
         }
 
         private void DownSwapUpdateMatrix(Piece piece, Piece leftPiece)
-        {
+        {            
             board.SetPiece(piece.GetColumn(), piece.GetRow(), leftPiece);
-            board.SetPiece(piece.GetColumn(), piece.GetRow() - 1, piece);
+            board.SetPiece(piece.GetColumn(), piece.GetRow() - 1, piece);            
         }
 
         private void DownSwapPieceColumnAndRow(Piece piece, Piece leftPiece)
@@ -123,27 +130,29 @@ namespace Assets.Scripts
             if (this.CanSwapLeft(piece))
             {
                 var leftPiece = GetLeftPiece(piece);
-
-                LeftSwapUpdateMatrix(piece, leftPiece);
-                LeftSwapPieceColumnAndRow(piece, leftPiece);
-                SwapPiecesRenderPositions(piece, leftPiece);
+                if (leftPiece)
+                {
+                    LeftSwapUpdateMatrix(piece, leftPiece);
+                    LeftSwapPieceColumnAndRow(piece, leftPiece);
+                    SwapPiecesRenderPositions(piece, leftPiece);
+                }
             }
         }
 
         private bool CanSwapLeft(Piece piece)
         {
-            return piece.GetColumn() > 0;
+            return piece.GetColumn() > 0;            
         }
 
         private Piece GetLeftPiece(Piece piece)
         {
-            return board.GetPiece(piece.GetColumn() - 1, piece.GetRow());
+            return board.GetPiece(piece.GetColumn() - 1, piece.GetRow());            
         }
 
         private void LeftSwapUpdateMatrix(Piece piece, Piece leftPiece)
         {
             board.SetPiece(piece.GetColumn(), piece.GetRow(), leftPiece);
-            board.SetPiece(piece.GetColumn() - 1, piece.GetRow(), piece);
+            board.SetPiece(piece.GetColumn() - 1, piece.GetRow(), piece);            
         }
 
         private void LeftSwapPieceColumnAndRow(Piece piece, Piece leftPiece)
@@ -157,15 +166,17 @@ namespace Assets.Scripts
         #region RightSwap
 
         private void SwapRight(Piece piece)
-        {
+        {            
             if (this.CanSwapRight(piece))
             {
                 var rightPiece = GetRightPiece(piece);
-
-                RightSwapUpdateMatrix(piece, rightPiece);
-                RightSwapPieceColumnAndRow(piece, rightPiece);
-                SwapPiecesRenderPositions(piece, rightPiece);
-            }
+                if (rightPiece)
+                {
+                    RightSwapUpdateMatrix(piece, rightPiece);
+                    RightSwapPieceColumnAndRow(piece, rightPiece);
+                    SwapPiecesRenderPositions(piece, rightPiece);
+                }
+            }            
         }
 
         private bool CanSwapRight(Piece piece)
@@ -179,9 +190,9 @@ namespace Assets.Scripts
         }
 
         private void RightSwapUpdateMatrix(Piece piece, Piece rightPiece)
-        {
-            board.SetPiece(piece.GetColumn(), piece.GetRow(), rightPiece);
-            board.SetPiece(piece.GetColumn() + 1, piece.GetRow(), piece);
+        {             
+                board.SetPiece(piece.GetColumn(), piece.GetRow(), rightPiece);
+                board.SetPiece(piece.GetColumn() + 1, piece.GetRow(), piece);           
         }
 
         private void RightSwapPieceColumnAndRow(Piece piece, Piece rightPiece)
@@ -193,10 +204,10 @@ namespace Assets.Scripts
         #endregion
 
         private void SwapPiecesRenderPositions(Piece piece, Piece rightPiece)
-        {
+        {            
             Vector3 piecePosition = new Vector3(piece.transform.position.x, piece.transform.position.y, Piece.DEPTH);
             piece.SetDestination(new Vector3(rightPiece.transform.position.x, rightPiece.transform.position.y, Piece.DEPTH));
-            rightPiece.SetDestination(piecePosition);
+            rightPiece.SetDestination(piecePosition);            
         }
 
         #endregion
