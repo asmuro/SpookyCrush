@@ -1,5 +1,7 @@
+using Assets.Scripts;
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Matches;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -22,6 +24,8 @@ public partial class Board : MonoBehaviour
         RunMatches();
     }
 
+    #region Board Creation
+
     private void CreateBoardAndPieces()
     {
         firstTilePosition = TilePrefab.GetFirstTilePosition(Width, Height);
@@ -30,12 +34,16 @@ public partial class Board : MonoBehaviour
         { 
             for(int j = 0; j < Height; j++)
             {
-                tilePosition = NextTilePosition(i, j, tilePosition);
+                tilePosition = new Vector2(i, j);                
                 CreateTile(tilePosition, i, j);
                 CreatePiece(tilePosition, i, j);                
             }
         }
     }
+
+    #endregion
+
+    #region Refresh Board
 
     private void OnSwapFinished(object sender, System.EventArgs e)
     {
@@ -43,6 +51,8 @@ public partial class Board : MonoBehaviour
         RunMatches();
         DestroyMatches();
     }
+
+    #endregion
 
     #region Matches
 
@@ -84,30 +94,31 @@ public partial class Board : MonoBehaviour
                 }
             }
         }
+        StartCoroutine(nameof(CollapseColumns));
     }
 
-    #endregion
-
-    private Vector2 NextTilePosition(int i, int j, Vector2 lastTilePosition)
+    private IEnumerator CollapseColumns()
     {
-        if (i == 0 && j == 0)
-            return firstTilePosition;
-        else
+        int columnsToCollapse = 0;
+        for (int i = 0; i < Width; i++)
         {
-            float xPos = NextCoordinatePosition(i, firstTilePosition.x, lastTilePosition.x);
-            float yPos = NextCoordinatePosition(j, firstTilePosition.y, lastTilePosition.y);
-
-            return new Vector2(xPos, yPos);
-        }            
-    }
-
-    private float NextCoordinatePosition(int coordinate,float initialPosition, float lastCoordinatePosition)
-    {
-        if (coordinate == 0)
-            return initialPosition;
-        else
-            return (initialPosition + TilePrefab.TileSize * coordinate);
-    }
+            for (int j = 0; j < Height; j++)
+            {
+                if (AllPieces[i, j] == null)
+                    columnsToCollapse++;
+                else if (columnsToCollapse > 0)
+                {
+                    AllPieces[i, j].SetRow(AllPieces[i, j].GetRow() - columnsToCollapse);
+                    AllPieces[i, AllPieces[i, j].GetRow()] = AllPieces[i, j];
+                    AllPieces[i, j] = null;
+                }
+            }
+            columnsToCollapse = 0;
+        }
+        yield return new WaitForSeconds(.1f);
+    }    
+    
+    #endregion
 
     private void CreateTile(Vector2 tilePosition, int i, int j)
     {
