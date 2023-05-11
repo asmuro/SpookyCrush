@@ -130,6 +130,7 @@ public partial class Board : MonoBehaviour
         Piece instance = InstantiateFromPrefab(tilePosition, i, j);
         while (WillCreateAMatch(instance))
         {
+            instance.Destroy();
             instance = InstantiateFromPrefab(tilePosition, i, j);
         }
 
