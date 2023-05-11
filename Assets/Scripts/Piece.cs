@@ -163,6 +163,7 @@ public class Piece : MonoBehaviour
     {
         this._column = column;
         this.UpdateName();
+        this.SetDestination(new Vector3(this._column, this.transform.position.y, Piece.DEPTH));
     }
 
     public int GetRow()
@@ -174,6 +175,7 @@ public class Piece : MonoBehaviour
     {
         this._row = row;
         this.UpdateName();
+        this.SetDestination(new Vector3(this.transform.position.x, this._row, Piece.DEPTH));
     }
 
     private void UpdateName()
@@ -184,7 +186,7 @@ public class Piece : MonoBehaviour
     public void SetDestination(Vector3 destination)
     {
         this._destinationPoint = destination;
-    }
+    }    
 
     #endregion
 }

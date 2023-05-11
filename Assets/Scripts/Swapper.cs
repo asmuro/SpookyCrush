@@ -53,8 +53,7 @@ namespace Assets.Scripts
                 if (upPiece)
                 {
                     UpSwapUpdateMatrix(piece, upPiece);
-                    UpSwapPieceColumnAndRow(piece, upPiece);
-                    SwapPiecesRenderPositions(piece, upPiece);
+                    UpSwapPieceColumnAndRow(piece, upPiece);                    
                 }
             }
         }
@@ -93,8 +92,7 @@ namespace Assets.Scripts
                 if (downPiece)
                 {
                     DownSwapUpdateMatrix(piece, downPiece);
-                    DownSwapPieceColumnAndRow(piece, downPiece);
-                    SwapPiecesRenderPositions(piece, downPiece);
+                    DownSwapPieceColumnAndRow(piece, downPiece);                    
                 }
             }
         }
@@ -133,8 +131,7 @@ namespace Assets.Scripts
                 if (leftPiece)
                 {
                     LeftSwapUpdateMatrix(piece, leftPiece);
-                    LeftSwapPieceColumnAndRow(piece, leftPiece);
-                    SwapPiecesRenderPositions(piece, leftPiece);
+                    LeftSwapPieceColumnAndRow(piece, leftPiece);                    
                 }
             }
         }
@@ -173,8 +170,7 @@ namespace Assets.Scripts
                 if (rightPiece)
                 {
                     RightSwapUpdateMatrix(piece, rightPiece);
-                    RightSwapPieceColumnAndRow(piece, rightPiece);
-                    SwapPiecesRenderPositions(piece, rightPiece);
+                    RightSwapPieceColumnAndRow(piece, rightPiece);                    
                 }
             }            
         }
@@ -191,8 +187,8 @@ namespace Assets.Scripts
 
         private void RightSwapUpdateMatrix(Piece piece, Piece rightPiece)
         {             
-                board.SetPiece(piece.GetColumn(), piece.GetRow(), rightPiece);
-                board.SetPiece(piece.GetColumn() + 1, piece.GetRow(), piece);           
+            board.SetPiece(piece.GetColumn(), piece.GetRow(), rightPiece);
+            board.SetPiece(piece.GetColumn() + 1, piece.GetRow(), piece);           
         }
 
         private void RightSwapPieceColumnAndRow(Piece piece, Piece rightPiece)
@@ -201,14 +197,7 @@ namespace Assets.Scripts
             rightPiece.SetColumn(rightPiece.GetColumn() - 1);
         }
 
-        #endregion
-
-        private void SwapPiecesRenderPositions(Piece piece, Piece rightPiece)
-        {            
-            Vector3 piecePosition = new Vector3(piece.transform.position.x, piece.transform.position.y, Piece.DEPTH);
-            piece.SetDestination(new Vector3(rightPiece.transform.position.x, rightPiece.transform.position.y, Piece.DEPTH));
-            rightPiece.SetDestination(piecePosition);            
-        }
+        #endregion        
 
         #endregion
     }
