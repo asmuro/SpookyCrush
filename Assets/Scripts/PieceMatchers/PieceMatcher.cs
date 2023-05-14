@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Matches
 {
-    public abstract class PieceMatcher : MonoBehaviour
+    public abstract class PieceMatcher : MonoBehaviour, IPieceMatcher
     {
         public abstract bool IsMatch(Piece piece);        
         
