@@ -5,12 +5,13 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Piece : MonoBehaviour
 {
-    public float swipeAngle = 0;
-    public const float DEPTH = -0.1f;
-    public float Speed = 100;
-    public bool _isMatched = false;
-    public event EventHandler SwapFinished;
+    public float SwipeAngle = 0;
+    public const float PIECE_DEPTH = -0.1f;
+    public float Speed = 100;    
+    
+    public event EventHandler SwipeFinished;
 
+    private bool _isMatched = false;
     private Swiper _swiper;
     private Swapper _swapper;
     private Color _originalColor;
@@ -18,7 +19,9 @@ public class Piece : MonoBehaviour
     private int _column;
     private int _row;
     private Vector3 _destinationPoint;
+    private Vector3 _futureDestinationPoint;
     private bool _swapping = false;
+    private bool _isOffset = false;
 
     #region MonoBehaviour
 
@@ -27,7 +30,10 @@ public class Piece : MonoBehaviour
     {
         _swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
         _swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
-        this._destinationPoint = transform.position;
+        if(_futureDestinationPoint == Vector3.zero)
+            _destinationPoint = transform.position;
+        else
+            _destinationPoint = _futureDestinationPoint;
     }
 
     // Update is called once per frame
@@ -42,22 +48,37 @@ public class Piece : MonoBehaviour
 
     private Vector3 CreatePositionToRenderTheNewPiece(Vector2 tilePosition)
     {
-        return new Vector3(tilePosition.x, tilePosition.y, DEPTH);
+        return new Vector3(tilePosition.x, tilePosition.y, PIECE_DEPTH);
     }
 
-    public Piece Instantiate(Vector2 tilePosition, GameObject parent, int i, int j)
+    public Piece Instantiate(Vector2 tilePosition, GameObject parent)
     {
-        var piece = Instantiate(this, CreatePositionToRenderTheNewPiece(tilePosition), Quaternion.identity);
-        this._destinationPoint = piece.transform.position;
+        var piece = Instantiate(this, CreatePositionToRenderTheNewPiece(tilePosition), Quaternion.identity);        
+        piece._destinationPoint = piece.transform.position;
         piece.transform.parent = parent.transform;
-        piece._column = i;
-        piece._row = j;
-        piece.name = $"{nameof(Piece)} ( {i}, {j} )";
+        piece._column = (int)tilePosition.x;
+        piece._row = (int)tilePosition.y;
+        piece.name = $"{nameof(Piece)} ( {tilePosition.x}, {tilePosition.y} )";
         piece._originalColor = new Color(piece.GetComponent<SpriteRenderer>().color.r,
             piece.GetComponent<SpriteRenderer>().color.g,
             piece.GetComponent<SpriteRenderer>().color.b,
-            piece.GetComponent<SpriteRenderer>().color.a);        
+            piece.GetComponent<SpriteRenderer>().color.a);
+        
         return piece;
+    }
+
+    #endregion
+
+    #region Visibility
+
+    private void SetInvisible()
+    {
+        this.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    public void SetVisible()
+    {
+        this.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     #endregion
@@ -82,7 +103,10 @@ public class Piece : MonoBehaviour
     public void SwapPiece()
     {
         if (!_swiper.IsStartAndFinalPositionEquals())
-            _swapper.Swap(_swiper.GetSwipeDirection(), this);        
+        {
+            _swapper.Swap(_swiper.GetSwipeDirection(), this);
+            _swapping = true;
+        }
     }
 
     #endregion
@@ -101,16 +125,14 @@ public class Piece : MonoBehaviour
                   Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
                   Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
                   Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
-            }
-            if (!_swapping)
-                _swapping = true;
+            }                
         }
         else
         {
             if (_swapping)
             {
                 _swapping = false;
-                SwapFinished.Invoke(null, EventArgs.Empty);
+                SwipeFinished.Invoke(null, EventArgs.Empty);
             }                
         }
     }
@@ -126,12 +148,12 @@ public class Piece : MonoBehaviour
 
     #endregion
 
-    #region Accessors
+    #region Accessors    
 
-    public void SetPosition(Vector3 newPosition)
+    public Vector3 GetPosition()
     {
-        this.transform.position = newPosition;
-    }    
+        return transform.position;
+    }
 
     public bool GetIsMatched()
     {
@@ -163,7 +185,7 @@ public class Piece : MonoBehaviour
     {
         this._column = column;
         this.UpdateName();
-        this.SetDestination(new Vector3(this._column, this.transform.position.y, Piece.DEPTH));
+        this.SetDestination(new Vector3(this._column, this.transform.position.y, Piece.PIECE_DEPTH));
     }
 
     public int GetRow()
@@ -175,7 +197,7 @@ public class Piece : MonoBehaviour
     {
         this._row = row;
         this.UpdateName();
-        this.SetDestination(new Vector3(this.transform.position.x, this._row, Piece.DEPTH));
+        this.SetDestination(new Vector3(this.transform.position.x, this._row, Piece.PIECE_DEPTH));
     }
 
     private void UpdateName()
@@ -188,5 +210,20 @@ public class Piece : MonoBehaviour
         this._destinationPoint = destination;
     }    
 
-    #endregion
+    public void SetFutureDestination(Vector3 futureDestination)
+    {
+        this._futureDestinationPoint = futureDestination;
+    }
+
+    public void SetIsOffset(bool isOffset)
+    {
+        _isOffset = isOffset;
+    }
+
+    public bool GetIsOffset()
+    {
+        return _isOffset;
+    }
+
+    #endregion   
 }
