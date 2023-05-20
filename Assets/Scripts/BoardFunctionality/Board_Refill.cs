@@ -18,13 +18,23 @@ namespace Assets.Scripts.BoardFunctionality
                 {
                     if(AllPieces[i,j] ==  null)
                     {
-                        CreatePiece(new Vector2(i, j));
+                        CreatePiece(new Vector2(i,j));
+                        AllPieces[i, j].SetFutureDestination(AllPieces[i, j].GetPosition() + Collapser.GetPositionOffset());
+                        AllPieces[i, j].SetIsOffset(true);
                     }
                 }
             }
 
-            yield return new WaitForSeconds(.8f);
+            yield return new WaitForSeconds(.2f);
             this.OnBoardRefilled();            
+        }
+
+        private void MakeAllPiecesVisibles()
+        {
+            foreach (var piece in AllPieces)
+            {
+                piece.SetVisible();
+            }
         }
     }
 }

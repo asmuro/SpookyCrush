@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 
 namespace Assets.Scripts.BoardFunctionality
 {
@@ -13,10 +14,11 @@ namespace Assets.Scripts.BoardFunctionality
                 {
                     tilePosition = new Vector2(i, j);
                     CreateTile(tilePosition, i, j);
-                    CreatePieceWithoutMatches(tilePosition);
+                    CreatePieceWithoutMatches(tilePosition);                    
                 }
             }
-        }
+            SetOffset();
+        }        
 
         private void CreateTile(Vector2 tilePosition, int i, int j)
         {
@@ -32,12 +34,17 @@ namespace Assets.Scripts.BoardFunctionality
                 instance = InstantiateFromPrefab(tilePosition);
             }
 
-            instance.SwipeFinished += OnSwapFinished;
+            instance.SwipeFinished += OnSwapFinished;            
         }
 
         private void CreatePiece(Vector2 tilePosition)
         {
             Piece instance = InstantiateFromPrefab(tilePosition);
+            SubscribeToPieceEvents(instance);
+        }        
+
+        private void SubscribeToPieceEvents(Piece instance)
+        {
             instance.SwipeFinished += OnSwapFinished;
         }
 
@@ -45,14 +52,21 @@ namespace Assets.Scripts.BoardFunctionality
         {
             Piece prefabPieceSelected = this.SelectPieceToCreate();
             Piece instance = prefabPieceSelected.Instantiate(tilePosition, this.gameObject);
-            instance.SetFutureDestination(tilePosition);
-            AllPieces[(int)tilePosition.x, (int)tilePosition.y] = instance;
+            AllPieces[(int)tilePosition.x, (int)tilePosition.y] = instance;            
             return instance;
         }
 
         private Piece SelectPieceToCreate()
         {
             return Pieces[Random.Range(0, Pieces.Length)]; ;
+        }
+
+        private void SetOffset()
+        {
+            foreach (var piece in AllPieces)
+            {
+                piece.SetFutureDestination(piece.GetPosition() + Collapser.GetPositionOffset());
+            }            
         }
     }
 }

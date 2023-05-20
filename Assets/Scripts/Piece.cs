@@ -21,6 +21,7 @@ public class Piece : MonoBehaviour
     private Vector3 _destinationPoint;
     private Vector3 _futureDestinationPoint;
     private bool _swapping = false;
+    private bool _isOffset = false;
 
     #region MonoBehaviour
 
@@ -29,7 +30,10 @@ public class Piece : MonoBehaviour
     {
         _swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
         _swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
-        this._destinationPoint = transform.position;
+        if(_futureDestinationPoint == Vector3.zero)
+            _destinationPoint = transform.position;
+        else
+            _destinationPoint = _futureDestinationPoint;
     }
 
     // Update is called once per frame
@@ -49,8 +53,8 @@ public class Piece : MonoBehaviour
 
     public Piece Instantiate(Vector2 tilePosition, GameObject parent)
     {
-        var piece = Instantiate(this, CreatePositionToRenderTheNewPiece(tilePosition), Quaternion.identity);
-        this._destinationPoint = piece.transform.position;
+        var piece = Instantiate(this, CreatePositionToRenderTheNewPiece(tilePosition), Quaternion.identity);        
+        piece._destinationPoint = piece.transform.position;
         piece.transform.parent = parent.transform;
         piece._column = (int)tilePosition.x;
         piece._row = (int)tilePosition.y;
@@ -58,8 +62,23 @@ public class Piece : MonoBehaviour
         piece._originalColor = new Color(piece.GetComponent<SpriteRenderer>().color.r,
             piece.GetComponent<SpriteRenderer>().color.g,
             piece.GetComponent<SpriteRenderer>().color.b,
-            piece.GetComponent<SpriteRenderer>().color.a);        
+            piece.GetComponent<SpriteRenderer>().color.a);
+        
         return piece;
+    }
+
+    #endregion
+
+    #region Visibility
+
+    private void SetInvisible()
+    {
+        this.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    public void SetVisible()
+    {
+        this.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     #endregion
@@ -129,12 +148,12 @@ public class Piece : MonoBehaviour
 
     #endregion
 
-    #region Accessors
+    #region Accessors    
 
-    public void SetPosition(Vector3 newPosition)
+    public Vector3 GetPosition()
     {
-        this.transform.position = newPosition;
-    }    
+        return transform.position;
+    }
 
     public bool GetIsMatched()
     {
@@ -196,5 +215,15 @@ public class Piece : MonoBehaviour
         this._futureDestinationPoint = futureDestination;
     }
 
-    #endregion
+    public void SetIsOffset(bool isOffset)
+    {
+        _isOffset = isOffset;
+    }
+
+    public bool GetIsOffset()
+    {
+        return _isOffset;
+    }
+
+    #endregion   
 }

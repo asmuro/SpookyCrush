@@ -8,7 +8,11 @@ namespace Assets.Scripts.Collapsers
     {
         public abstract IEnumerator Collapse();
 
-        public abstract Vector3 GetPositionWithOffset(Vector3 position);
+        public abstract IEnumerator CollapseOffsetPieces();
+
+        public abstract IEnumerator InitialCollapse();
+
+        public abstract Vector3 GetPositionOffset();
         
     }
 }

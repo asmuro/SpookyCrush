@@ -7,7 +7,9 @@ namespace Assets.Scripts.Collapsers
 {
     public class UpToDownCollapser : Collapser
     {
-        private Board board;
+        public Vector3 Offset;
+
+        private Board board;        
 
         #region Monobehavior
 
@@ -21,9 +23,9 @@ namespace Assets.Scripts.Collapsers
 
         #region ICollapser
 
-        public override Vector3 GetPositionWithOffset(Vector3 position)
+        public override Vector3 GetPositionOffset()
         {
-            throw new NotImplementedException();
+            return Offset;
         }
 
         public override IEnumerator Collapse()
@@ -47,6 +49,36 @@ namespace Assets.Scripts.Collapsers
             }
             yield return new WaitForSeconds(.4f);
             board.OnCollapsedColumns();
+        }
+
+        public override IEnumerator CollapseOffsetPieces()
+        {
+            for (int i = 0; i < board.Width; i++)
+            {
+                for (int j = 0; j < board.Height; j++)
+                {
+                    if (board.GetPiece(i, j).GetIsOffset())
+                    {
+                        Piece currentPiece = board.GetPiece(i, j);
+                        currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(),Piece.PIECE_DEPTH));                        
+                    }
+                }                
+            }
+            yield return new WaitForSeconds(.4f);            
+        }
+
+        public override IEnumerator InitialCollapse()
+        {
+            int columnsToCollapse = (int)GetPositionOffset().y;
+            for (int i = 0; i < board.Width; i++)
+            {
+                for (int j = 0; j < board.Height; j++)
+                {
+                    Piece currentPiece = board.GetPiece(i, j);
+                    currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Piece.PIECE_DEPTH));                        
+                }                
+            }
+            yield return new WaitForSeconds(.4f);            
         }
 
         #endregion
