@@ -13,6 +13,7 @@ namespace Assets.Scripts.BoardFunctionality
         public PieceMatcher[] PieceMatchers;
         public Collapser Collapser;
         public Timer TimerToStartPlaying;
+        public StateMachine StateMachine;
 
         private Piece[,] AllPieces;
         private bool _boardRefilled = false;
@@ -37,6 +38,7 @@ namespace Assets.Scripts.BoardFunctionality
 
         private void OnSwapFinished(object sender, System.EventArgs e)
         {
+            StateMachine.State = Enums.State.Wait;
             DestroyAndCollapse();            
         }
 
@@ -56,15 +58,18 @@ namespace Assets.Scripts.BoardFunctionality
         private void OnBoardRefilled()
         {
             MakeAllPiecesVisibles();
-            CollapseOffsetPieces();            
+            CollapseOffsetPieces();
+            DestroyAndCollapse();
         }
 
         private void DestroyAndCollapse()
         {
             MarkMatches();
             DestroyMatches();
-            if (matchesDestroyed)
+            if (_matchesDestroyed)
                 CollapseColumns();
+            else
+                StateMachine.State = Enums.State.Running;
         }
 
         #endregion        

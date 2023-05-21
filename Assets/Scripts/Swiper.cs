@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class Swiper : MonoBehaviour
 {
-    private Vector2 starterTouchPosition;
-    private Vector2 finalTouchPosition;
+    private Vector2 _starterTouchPosition;
+    private Vector2 _finalTouchPosition;
     
 
     private const int RIGHT_MAX_SWAP_ANGLE = 45;
@@ -33,22 +33,26 @@ public class Swiper : MonoBehaviour
     #region Properties
 
     public void SetStarterTouchPosition(Vector2 swipeStartPosition)
-    { this.starterTouchPosition = swipeStartPosition; }
+    { 
+        _starterTouchPosition = swipeStartPosition; 
+    }
 
     public void SetFinalTouchPosition(Vector2 swipeFinalPosition)
-    { this.finalTouchPosition = swipeFinalPosition; }
+    { 
+        _finalTouchPosition = swipeFinalPosition; 
+    }
 
     #endregion
 
     private float CalculateAngleBetweenFirstAndFinalPosition()
     {
-        return Mathf.Atan2(finalTouchPosition.y - starterTouchPosition.y, finalTouchPosition.x - starterTouchPosition.x) * 180 / Mathf.PI;        
+        return Mathf.Atan2(_finalTouchPosition.y - _starterTouchPosition.y, _finalTouchPosition.x - _starterTouchPosition.x) * 180 / Mathf.PI;        
     }   
 
     public bool IsStartAndFinalPositionEquals()
     {
-        if (Mathf.Abs(finalTouchPosition.y - starterTouchPosition.y) > SWIPE_TOLERANCE ||
-            Mathf.Abs(finalTouchPosition.x - starterTouchPosition.x) > SWIPE_TOLERANCE)
+        if (Mathf.Abs(_finalTouchPosition.y - _starterTouchPosition.y) > SWIPE_TOLERANCE ||
+            Mathf.Abs(_finalTouchPosition.x - _starterTouchPosition.x) > SWIPE_TOLERANCE)
             return false;
         
         return true;
