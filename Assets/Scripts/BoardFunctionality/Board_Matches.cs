@@ -4,7 +4,7 @@ namespace Assets.Scripts.BoardFunctionality
 {
     public partial class Board
     {
-        private bool matchesDestroyed = false;
+        private bool _matchesDestroyed = false;
         
         private void MarkMatches()
         {
@@ -23,7 +23,7 @@ namespace Assets.Scripts.BoardFunctionality
         private void DestroyMatches()
         {
             Piece piece;
-            matchesDestroyed = false;
+            _matchesDestroyed = false;
 
             for (int i = 0; i < Width; i++)
             {
@@ -34,7 +34,7 @@ namespace Assets.Scripts.BoardFunctionality
                     {
                         piece.Destroy();
                         AllPieces[i, j] = null;
-                        matchesDestroyed = true;
+                        _matchesDestroyed = true;
                     }
                 }
             }

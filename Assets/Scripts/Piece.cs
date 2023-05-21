@@ -1,4 +1,5 @@
 using Assets.Scripts;
+using Assets.Scripts.Enums;
 using System;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
@@ -15,6 +16,7 @@ public class Piece : MonoBehaviour
     private Swiper _swiper;
     private Swapper _swapper;
     private Color _originalColor;
+    private StateMachine _stateMachine;
 
     private int _column;
     private int _row;
@@ -30,7 +32,8 @@ public class Piece : MonoBehaviour
     {
         _swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
         _swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
-        if(_futureDestinationPoint == Vector3.zero)
+        _stateMachine = FindObjectOfType<StateMachine>();
+        if (_futureDestinationPoint == Vector3.zero)
             _destinationPoint = transform.position;
         else
             _destinationPoint = _futureDestinationPoint;
@@ -85,15 +88,21 @@ public class Piece : MonoBehaviour
 
     #region Swipe
 
-    private void OnMouseDown()
+    private void OnMouseDown()    
     {
-        _swiper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));        
+        if (_stateMachine.State == State.Running)
+        {
+            _swiper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
     }
 
     private void OnMouseUp()
     {
-        _swiper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        this.SwapPiece();
+        if (_stateMachine.State == State.Running)
+        {
+            _swiper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            this.SwapPiece();
+        }
     }
 
     #endregion
