@@ -1,4 +1,6 @@
 ﻿using Assets.Scripts.Interfaces;
+using System.Collections;
+using UnityEngine;
 
 namespace Assets.Scripts.BoardFunctionality
 {
@@ -32,6 +34,7 @@ namespace Assets.Scripts.BoardFunctionality
                     piece = AllPieces[i, j];
                     if (piece && piece.GetIsMatched())
                     {
+                        StartCoroutine(InstatiateExplosionFXCo(piece.transform.position));
                         piece.Destroy();
                         AllPieces[i, j] = null;
                         _matchesDestroyed = true;
@@ -39,6 +42,16 @@ namespace Assets.Scripts.BoardFunctionality
                 }
             }
         }
+
+        IEnumerator InstatiateExplosionFXCo(Vector3 point)
+        {
+            ParticleSystem particle = ExplosionFX[Random.Range(0, ExplosionFX.Length)];
+            var rightFX = Instantiate(particle, new Vector3(point.x, point.y, -1), Quaternion.identity);
+            rightFX.Play();            
+            
+            yield return new WaitForSeconds(1f);
+            Destroy(rightFX);
+        }        
 
         private bool WillCreateAMatch(Piece piece)
         {
