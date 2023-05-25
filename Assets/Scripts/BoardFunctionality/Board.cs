@@ -14,8 +14,10 @@ namespace Assets.Scripts.BoardFunctionality
         public Collapser Collapser;
         public Timer TimerToStartPlaying;
         public StateMachine StateMachine;
+        public ParticleSystem[] ExplosionFX;
+        public float DestroyExplsionFXAfterSeconds = 1;
 
-        private Piece[,] AllPieces;
+        private Piece[,] AllPieces;        
         private bool _boardRefilled = false;
 
         // Start is called before the first frame update
@@ -24,7 +26,7 @@ namespace Assets.Scripts.BoardFunctionality
             AllPieces = new Piece[Width, Height];
             CreateBoardAndPieces();
             MarkMatches();
-            TimerToStartPlaying.TimerEnded += OnTimerEnded;
+            TimerToStartPlaying.TimerEnded += OnTimerEnded;            
         }
 
         private void OnTimerEnded(object sender, System.EventArgs e)
