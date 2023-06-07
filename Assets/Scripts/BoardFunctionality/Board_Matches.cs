@@ -10,7 +10,7 @@ namespace Assets.Scripts.BoardFunctionality
         
         private void MarkMatches()
         {
-            foreach (var piece in AllPieces)
+            foreach (var piece in allPieces)
             {
                 if (piece)
                 {
@@ -31,12 +31,12 @@ namespace Assets.Scripts.BoardFunctionality
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    piece = AllPieces[i, j];
+                    piece = allPieces[i, j];
                     if (piece && piece.GetIsMatched())
                     {
                         StartCoroutine(InstatiateExplosionFXCo(piece.transform.position));
                         piece.Destroy();
-                        AllPieces[i, j] = null;
+                        allPieces[i, j] = null;
                         _matchesDestroyed = true;
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using UnityEditor;
 
 namespace Assets.Scripts.BoardFunctionality
 {
@@ -13,8 +14,9 @@ namespace Assets.Scripts.BoardFunctionality
                 for (int j = 0; j < Height; j++)
                 {
                     tilePosition = new Vector2(i, j);
-                    CreateTile(tilePosition, i, j);
-                    CreatePieceWithoutMatches(tilePosition);                    
+                    //CreateTile(tilePosition, i, j);
+                    if (!this.blankSpacesMap[i,j])
+                        CreatePieceWithoutMatches(tilePosition);                    
                 }
             }
             SetOffset();
@@ -52,7 +54,7 @@ namespace Assets.Scripts.BoardFunctionality
         {
             Piece prefabPieceSelected = this.SelectPieceToCreate();
             Piece instance = prefabPieceSelected.Instantiate(tilePosition, this.gameObject);
-            AllPieces[(int)tilePosition.x, (int)tilePosition.y] = instance;            
+            allPieces[(int)tilePosition.x, (int)tilePosition.y] = instance;            
             return instance;
         }
 
@@ -63,9 +65,12 @@ namespace Assets.Scripts.BoardFunctionality
 
         private void SetOffset()
         {
-            foreach (var piece in AllPieces)
+            foreach (var piece in allPieces)
             {
-                piece.SetFutureDestination(piece.GetPosition() + Collapser.GetPositionOffset());
+                if (piece != null)
+                {
+                    piece.SetFutureDestination(piece.GetPosition() + Collapser.GetPositionOffset());
+                }
             }            
         }
     }

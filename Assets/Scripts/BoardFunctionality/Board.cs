@@ -12,18 +12,21 @@ namespace Assets.Scripts.BoardFunctionality
         public Piece[] Pieces;
         public PieceMatcher[] PieceMatchers;
         public Collapser Collapser;
-        public Timer TimerToStartPlaying;
-        public StateMachine StateMachine;
+        public Timer TimerToStartPlaying;        
         public ParticleSystem[] ExplosionFX;
-        public float DestroyExplsionFXAfterSeconds = 1;
+        public float DestroyExplosionFXAfterSeconds = 1;
+        public Vector2[] BlankSpaces;
 
-        private Piece[,] AllPieces;        
-        private bool _boardRefilled = false;
+        private StateMachine StateMachine;
+        private Piece[,] allPieces;
+        private bool[,] blankSpacesMap;
+        private bool boardRefilled = false;
 
         // Start is called before the first frame update
         void Start()
         {
-            AllPieces = new Piece[Width, Height];
+            allPieces = new Piece[Width, Height];
+            CreateBlankSpacesMap();
             CreateBoardAndPieces();
             MarkMatches();
             TimerToStartPlaying.TimerEnded += OnTimerEnded;            
@@ -46,9 +49,9 @@ namespace Assets.Scripts.BoardFunctionality
 
         public void OnCollapsedColumns()
         {
-            if (_boardRefilled)
+            if (boardRefilled)
             {
-                _boardRefilled = false;
+                boardRefilled = false;
                 DestroyAndCollapse();                
             }
             else
@@ -80,12 +83,12 @@ namespace Assets.Scripts.BoardFunctionality
 
         public Piece GetPiece(int i, int j)
         {
-            return AllPieces[i, j];
+            return allPieces[i, j];
         }
 
         public void SetPiece(int i, int j, Piece piece)
         {
-            AllPieces[i, j] = piece;
+            allPieces[i, j] = piece;
         }
 
         #endregion
