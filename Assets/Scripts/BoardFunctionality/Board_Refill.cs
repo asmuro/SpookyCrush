@@ -16,11 +16,11 @@ namespace Assets.Scripts.BoardFunctionality
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    if(AllPieces[i,j] ==  null)
+                    if(allPieces[i,j] == null && !blankSpacesMap[i,j])
                     {
                         CreatePiece(new Vector2(i,j));
-                        AllPieces[i, j].SetFutureDestination(AllPieces[i, j].GetPosition() + Collapser.GetPositionOffset());
-                        AllPieces[i, j].SetIsOffset(true);
+                        allPieces[i, j].SetFutureDestination(allPieces[i, j].GetPosition() + Collapser.GetPositionOffset());
+                        allPieces[i, j].SetIsOffset(true);
                     }
                 }
             }
@@ -31,9 +31,12 @@ namespace Assets.Scripts.BoardFunctionality
 
         private void MakeAllPiecesVisibles()
         {
-            foreach (var piece in AllPieces)
+            foreach (var piece in allPieces)
             {
-                piece.SetVisible();
+                if (piece != null)
+                {
+                    piece.SetVisible();
+                }
             }
         }
     }

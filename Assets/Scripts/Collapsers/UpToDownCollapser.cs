@@ -35,14 +35,22 @@ namespace Assets.Scripts.Collapsers
             {
                 for (int j = 0; j < board.Height; j++)
                 {
-                    if (board.GetPiece(i, j) == null)
+                    if (board.GetPiece(i, j) == null && !board.IsBlankSpace(i, j))
                         columnsToCollapse++;
                     else if (columnsToCollapse > 0)
                     {
                         Piece currentPiece = board.GetPiece(i, j);
-                        currentPiece.SetRow(currentPiece.GetRow() - columnsToCollapse);
-                        board.SetPiece(i, currentPiece.GetRow(), currentPiece);                        
-                        board.SetPiece(i, j, null);
+                        if (currentPiece != null)
+                        {
+                            var blankSpaceOffset = 0;
+                            if (IsFuturePositionInvolvingBlankSpace(i, currentPiece.GetRow(), currentPiece.GetRow() - columnsToCollapse))
+                            {
+                                blankSpaceOffset = GetBlankSpaceOffset(i, currentPiece.GetRow());
+                            }                            
+                            currentPiece.SetRow(currentPiece.GetRow() - columnsToCollapse - blankSpaceOffset);
+                            board.SetPiece(i, currentPiece.GetRow(), currentPiece);
+                            board.SetPiece(i, j, null);
+                        }
                     }
                 }
                 columnsToCollapse = 0;
@@ -51,13 +59,37 @@ namespace Assets.Scripts.Collapsers
             board.OnCollapsedColumns();
         }
 
+        private bool IsFuturePositionInvolvingBlankSpace(int x, int yFrom, int yTo)
+        {
+            for (int k = yFrom; k >= yTo; k--)
+            {
+                if (board.IsBlankSpace(x, k))
+                    return true;
+            }
+            return false;
+        }
+        
+
+        private int GetBlankSpaceOffset(int x, int y)
+        {
+            int offset = 0;            
+
+            for (int k = y; k >= 0; k--)
+            {
+                if (board.IsBlankSpace(x, k))
+                    offset++;                
+            }
+            
+            return offset;
+        }
+
         public override IEnumerator CollapseOffsetPieces()
         {
             for (int i = 0; i < board.Width; i++)
             {
                 for (int j = 0; j < board.Height; j++)
                 {
-                    if (board.GetPiece(i, j).GetIsOffset())
+                    if (board.GetPiece(i, j) != null && board.GetPiece(i, j).GetIsOffset())
                     {
                         Piece currentPiece = board.GetPiece(i, j);
                         currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(),Piece.PIECE_DEPTH));                        
@@ -69,13 +101,15 @@ namespace Assets.Scripts.Collapsers
 
         public override IEnumerator InitialCollapse()
         {
-            int columnsToCollapse = (int)GetPositionOffset().y;
             for (int i = 0; i < board.Width; i++)
             {
                 for (int j = 0; j < board.Height; j++)
                 {
                     Piece currentPiece = board.GetPiece(i, j);
-                    currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Piece.PIECE_DEPTH));                        
+                    if (currentPiece != null)
+                    {
+                        currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Piece.PIECE_DEPTH));
+                    }
                 }                
             }
             yield return new WaitForSeconds(.4f);            
