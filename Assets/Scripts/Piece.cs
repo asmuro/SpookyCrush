@@ -1,42 +1,47 @@
 using Assets.Scripts;
 using Assets.Scripts.Enums;
+using Assets.Scripts.Interfaces;
 using System;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class Piece : MonoBehaviour
+public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
 {
+    #region Fields
+
     public float SwipeAngle = 0;
     public const float PIECE_DEPTH = -0.1f;
     public float Speed = 100;    
     
     public event EventHandler SwipeFinished;
 
-    private bool _isMatched = false;
-    private Swiper _swiper;
-    private Swapper _swapper;
-    private Color _originalColor;
-    private StateMachine _stateMachine;
+    public bool isMatched = false;
+    private Swiper swiper;
+    private Swapper swapper;
+    private Color originalColor;
+    private StateMachine stateMachine;
 
-    private int _column;
-    private int _row;
-    private Vector3 _destinationPoint;
-    private Vector3 _futureDestinationPoint;
-    private bool _swapping = false;
-    private bool _isOffset = false;
+    private int column;
+    private int row;
+    private Vector3 destinationPoint;
+    private Vector3 futureDestinationPoint;
+    private bool swapping = false;
+    private bool isOffset = false;
+
+    #endregion
 
     #region MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
     {
-        _swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
-        _swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
-        _stateMachine = FindObjectOfType<StateMachine>();
-        if (_futureDestinationPoint == Vector3.zero)
-            _destinationPoint = transform.position;
+        swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
+        swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
+        stateMachine = FindObjectOfType<StateMachine>();
+        if (futureDestinationPoint == Vector3.zero)
+            destinationPoint = transform.position;
         else
-            _destinationPoint = _futureDestinationPoint;
+            destinationPoint = futureDestinationPoint;        
     }
 
     // Update is called once per frame
@@ -57,18 +62,20 @@ public class Piece : MonoBehaviour
     public Piece Instantiate(Vector2 tilePosition, GameObject parent)
     {
         var piece = Instantiate(this, CreatePositionToRenderTheNewPiece(tilePosition), Quaternion.identity);        
-        piece._destinationPoint = piece.transform.position;
+        piece.destinationPoint = piece.transform.position;
         piece.transform.parent = parent.transform;
-        piece._column = (int)tilePosition.x;
-        piece._row = (int)tilePosition.y;
+        piece.column = (int)tilePosition.x;
+        piece.row = (int)tilePosition.y;
         piece.name = $"{nameof(Piece)} ( {tilePosition.x}, {tilePosition.y} )";
-        piece._originalColor = new Color(piece.GetComponent<SpriteRenderer>().color.r,
+        piece.originalColor = new Color(piece.GetComponent<SpriteRenderer>().color.r,
             piece.GetComponent<SpriteRenderer>().color.g,
             piece.GetComponent<SpriteRenderer>().color.b,
             piece.GetComponent<SpriteRenderer>().color.a);
         
         return piece;
     }
+
+    
 
     #endregion
 
@@ -90,17 +97,17 @@ public class Piece : MonoBehaviour
 
     private void OnMouseDown()    
     {
-        if (_stateMachine.State == State.Running)
+        if (stateMachine.State == State.Running)
         {
-            _swiper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            swiper.SetStarterTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         }
     }
 
     private void OnMouseUp()
     {
-        if (_stateMachine.State == State.Running)
+        if (stateMachine.State == State.Running)
         {
-            _swiper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            swiper.SetFinalTouchPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             this.SwapPiece();
         }
     }
@@ -111,10 +118,10 @@ public class Piece : MonoBehaviour
 
     public void SwapPiece()
     {
-        if (!_swiper.IsStartAndFinalPositionEquals())
+        if (!swiper.IsStartAndFinalPositionEquals())
         {
-            _swapper.Swap(_swiper.GetSwipeDirection(), this);
-            _swapping = true;
+            swapper.Swap(swiper.GetSwipeDirection(), this);
+            swapping = true;
         }
     }
 
@@ -124,24 +131,24 @@ public class Piece : MonoBehaviour
 
     private void SmoothMove()
     {
-        if (_destinationPoint != transform.position            )
+        if (destinationPoint != transform.position            )
         {
-            if (Vector2.Distance(_destinationPoint, this.transform.position) < 0.1)
-                transform.position = _destinationPoint;
+            if (Vector2.Distance(destinationPoint, this.transform.position) < 0.1)
+                transform.position = destinationPoint;
             else
             {
                 transform.position = new Vector3(
-                  Mathf.SmoothStep(transform.position.x, _destinationPoint.x, Speed * Time.deltaTime),
-                  Mathf.SmoothStep(transform.position.y, _destinationPoint.y, Speed * Time.deltaTime),
-                  Mathf.SmoothStep(transform.position.z, _destinationPoint.z, Speed * Time.deltaTime));
+                  Mathf.SmoothStep(transform.position.x, destinationPoint.x, Speed * Time.deltaTime),
+                  Mathf.SmoothStep(transform.position.y, destinationPoint.y, Speed * Time.deltaTime),
+                  Mathf.SmoothStep(transform.position.z, destinationPoint.z, Speed * Time.deltaTime));
             }                
         }
         else
         {
-            if (_swapping)
+            if (swapping)
             {
-                _swapping = false;
-                SwipeFinished.Invoke(null, EventArgs.Empty);
+                swapping = false;
+                SwipeFinished?.Invoke(null, EventArgs.Empty);
             }                
         }
     }
@@ -166,13 +173,13 @@ public class Piece : MonoBehaviour
 
     public bool GetIsMatched()
     {
-        return _isMatched;
+        return isMatched;
     }
 
     public void SetIsMatched(bool isMatched)
     {
-        _isMatched = isMatched;
-        if (_isMatched)
+        this.isMatched = isMatched;
+        if (this.isMatched)
         {
             SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();            
             sprite.color = new Color(0f, 0f, 0f, .2f);
@@ -180,59 +187,82 @@ public class Piece : MonoBehaviour
         else
         {
             SpriteRenderer sprite = this.GetComponent<SpriteRenderer>();
-            if (sprite.color != _originalColor)
-                sprite.color = _originalColor;
+            if (sprite.color != originalColor)
+                sprite.color = originalColor;
         }
     }
 
     public int GetColumn()
     {
-        return _column;
+        return column;
     }
 
     public void SetColumn(int column)
     {
-        this._column = column;
+        this.column = column;
         this.UpdateName();
-        this.SetDestination(new Vector3(this._column, this.transform.position.y, Piece.PIECE_DEPTH));
+        this.SetDestination(new Vector3(this.column, this.transform.position.y, Piece.PIECE_DEPTH));
     }
 
     public int GetRow()
     {
-        return _row;
+        return row;
     }
 
     public void SetRow(int row)
     {
-        this._row = row;
+        this.row = row;
         this.UpdateName();
-        this.SetDestination(new Vector3(this.transform.position.x, this._row, Piece.PIECE_DEPTH));
+        this.SetDestination(new Vector3(this.transform.position.x, this.row, Piece.PIECE_DEPTH));
     }
 
     private void UpdateName()
     {
-        this.name = $"{nameof(Piece)} ( {this._column}, {this._row} )";
+        this.name = $"{nameof(Piece)} ( {this.column}, {this.row} )";
+    }
+
+    public void SetRowAndColumn(int row, int column)
+    {
+        this.column = column;
+        this.row = row;
+        this.UpdateName();
+        this.SetDestination(new Vector3(this.column, this.row, Piece.PIECE_DEPTH));
     }
 
     public void SetDestination(Vector3 destination)
     {
-        this._destinationPoint = destination;
+        this.destinationPoint = destination;
     }    
 
     public void SetFutureDestination(Vector3 futureDestination)
     {
-        this._futureDestinationPoint = futureDestination;
+        this.futureDestinationPoint = futureDestination;
     }
 
     public void SetIsOffset(bool isOffset)
     {
-        _isOffset = isOffset;
+        this.isOffset = isOffset;
     }
 
     public bool GetIsOffset()
     {
-        return _isOffset;
+        return isOffset;
     }
 
-    #endregion   
+    public string Tag => this.tag;
+
+    public string Name => this.name;
+
+    #endregion
+
+    #region ICloneable
+
+    public object Clone()
+    {
+        var cloned = (Piece)this.MemberwiseClone();
+        cloned.name = cloned.name + " clone ";
+        return cloned;
+    }
+
+    #endregion
 }

@@ -12,7 +12,7 @@ namespace Assets.Scripts.BoardFunctionality
         {
             foreach (var piece in allPieces)
             {
-                if (piece)
+                if (piece != null)
                 {
                     foreach (IPieceMatcher pieceMatcher in PieceMatchers)
                     {
@@ -24,7 +24,7 @@ namespace Assets.Scripts.BoardFunctionality
 
         private void DestroyMatches()
         {
-            Piece piece;
+            IPiece piece;
             _matchesDestroyed = false;
 
             for (int i = 0; i < Width; i++)
@@ -32,9 +32,9 @@ namespace Assets.Scripts.BoardFunctionality
                 for (int j = 0; j < Height; j++)
                 {
                     piece = allPieces[i, j];
-                    if (piece && piece.GetIsMatched())
+                    if (piece != null && piece.GetIsMatched())
                     {
-                        StartCoroutine(InstatiateExplosionFXCo(piece.transform.position));
+                        StartCoroutine(InstatiateExplosionFXCo(piece.GetPosition()));
                         piece.Destroy();
                         allPieces[i, j] = null;
                         _matchesDestroyed = true;

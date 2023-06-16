@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.BoardFunctionality;
 using UnityEngine;
+using Assets.Scripts.Interfaces;
 
 namespace Assets.Scripts.Matches
 {
@@ -26,12 +27,12 @@ namespace Assets.Scripts.Matches
 
         #region Match3Horizontal
 
-        public override bool IsMatch(Piece piece)
+        public override bool IsMatch(ILogicPiece piece)
         {
             return HasTwoAtTheRight(piece) || HasTwoAtTheLeft(piece) || HasOneOnEachSide(piece);
         }
 
-        private bool HasTwoAtTheRight(Piece piece)
+        private bool HasTwoAtTheRight(ILogicPiece piece)
         {
             if (IsPieceInTheLastColumn(piece) ||
                 IsPieceInTheNextToLastColumn(piece) ||
@@ -39,13 +40,13 @@ namespace Assets.Scripts.Matches
                 board.GetPiece(piece.GetColumn() + 2, piece.GetRow()) == null) 
                 return piece.GetIsMatched();
             
-            if (board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag
-                && board.GetPiece(piece.GetColumn() + 2, piece.GetRow()).tag == piece.tag)
+            if (board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).Tag == piece.Tag
+                && board.GetPiece(piece.GetColumn() + 2, piece.GetRow()).Tag == piece.Tag)
                 return true;
             return piece.GetIsMatched();
         }
 
-        private bool HasTwoAtTheLeft(Piece piece)
+        private bool HasTwoAtTheLeft(ILogicPiece piece)
         {
             if (IsPieceInTheFirstColumn(piece) ||
                 IsPieceInTheSecondColumn(piece) ||
@@ -53,13 +54,13 @@ namespace Assets.Scripts.Matches
                 board.GetPiece(piece.GetColumn() - 2, piece.GetRow()) == null) 
                 return piece.GetIsMatched();
             
-            if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag
-                && board.GetPiece(piece.GetColumn() - 2, piece.GetRow()).tag == piece.tag)
+            if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).Tag == piece.Tag
+                && board.GetPiece(piece.GetColumn() - 2, piece.GetRow()).Tag == piece.Tag)
                 return true;
             return piece.GetIsMatched();
         }
 
-        private bool HasOneOnEachSide(Piece piece)
+        private bool HasOneOnEachSide(ILogicPiece piece)
         {
             if (IsPieceInTheFirstColumn(piece) ||
                 IsPieceInTheLastColumn(piece) ||
@@ -67,30 +68,81 @@ namespace Assets.Scripts.Matches
                 board.GetPiece(piece.GetColumn() + 1, piece.GetRow()) == null) 
                 return piece.GetIsMatched();
             
-            if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).tag == piece.tag 
-                && board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).tag == piece.tag)
+            if (board.GetPiece(piece.GetColumn() - 1, piece.GetRow()).Tag == piece.Tag 
+                && board.GetPiece(piece.GetColumn() + 1, piece.GetRow()).Tag == piece.Tag)
                 return true;
             return piece.GetIsMatched();
         }       
 
-        private bool IsPieceInTheFirstColumn(Piece piece)
+        private bool IsPieceInTheFirstColumn(ILogicPiece piece)
         {
             return piece.GetColumn() == FIRST_COLUMN;
         }
 
-        private bool IsPieceInTheSecondColumn(Piece piece)
+        private bool IsPieceInTheSecondColumn(ILogicPiece piece)
         {
             return piece.GetColumn() == SECOND_COLUMN;
         }
 
-        private bool IsPieceInTheLastColumn(Piece piece)
+        private bool IsPieceInTheLastColumn(ILogicPiece piece)
         {
             return piece.GetColumn() == board.Width - 1;
         }
 
-        private bool IsPieceInTheNextToLastColumn(Piece piece)
+        private bool IsPieceInTheNextToLastColumn(ILogicPiece piece)
         {
             return piece.GetColumn() == board.Width - 2;
+        }
+
+        #endregion
+
+        #region Match3Horizontal Clone Board        
+
+        public override bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
+        {
+            return HasTwoAtTheRight(allPiecesClone, piece) || HasTwoAtTheLeft(allPiecesClone, piece) || HasOneOnEachSide(allPiecesClone, piece);
+        }
+
+        private bool HasTwoAtTheRight(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
+        {
+            if (IsPieceInTheLastColumn(piece) ||
+                IsPieceInTheNextToLastColumn(piece) ||
+                allPiecesClone[piece.GetColumn() + 1, piece.GetRow()] == null ||
+                allPiecesClone[piece.GetColumn() + 2, piece.GetRow()] == null)
+                return piece.GetIsMatched();
+
+            if (allPiecesClone[piece.GetColumn() + 1, piece.GetRow()].Tag == piece.Tag
+                && allPiecesClone[piece.GetColumn() + 2, piece.GetRow()].Tag == piece.Tag)
+                return true;
+            return piece.GetIsMatched();
+        }
+
+        private bool HasTwoAtTheLeft(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
+        {
+            if (IsPieceInTheFirstColumn(piece) ||
+                IsPieceInTheSecondColumn(piece) ||
+                allPiecesClone[piece.GetColumn() - 1, piece.GetRow()] == null ||
+                allPiecesClone[piece.GetColumn() - 2, piece.GetRow()] == null)
+                return piece.GetIsMatched();
+
+            if (allPiecesClone[piece.GetColumn() - 1, piece.GetRow()].Tag == piece.Tag
+                && allPiecesClone[piece.GetColumn() - 2, piece.GetRow()].Tag == piece.Tag)
+                return true;
+            return piece.GetIsMatched();
+        }
+
+        private bool HasOneOnEachSide(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
+        {
+            if (IsPieceInTheFirstColumn(piece) ||
+                IsPieceInTheLastColumn(piece) ||
+                allPiecesClone[piece.GetColumn() - 1, piece.GetRow()] == null ||
+                allPiecesClone[piece.GetColumn() + 1, piece.GetRow()] == null)
+                return piece.GetIsMatched();
+
+            if (allPiecesClone[piece.GetColumn() - 1, piece.GetRow()].Tag == piece.Tag
+                && allPiecesClone[piece.GetColumn() + 1, piece.GetRow()].Tag == piece.Tag)
+                return true;
+            return piece.GetIsMatched();
         }
 
         #endregion
