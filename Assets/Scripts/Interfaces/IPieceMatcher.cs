@@ -11,6 +11,6 @@ namespace Assets.Scripts.Interfaces
         /// </summary>
         /// <param name="piece">A piece of the puzzle</param>
         /// <returns>If the piece belongs to a match (true) or not(false)</returns>
-        bool IsMatch(Piece piece);
+        bool IsMatch(ILogicPiece piece);
     }
 }

@@ -25,7 +25,7 @@ namespace Assets.Scripts.BoardFunctionality
                 }
             }
 
-            yield return new WaitForSeconds(.2f);
+            yield return new WaitForSeconds(.2f);            
             this.OnBoardRefilled();            
         }
 

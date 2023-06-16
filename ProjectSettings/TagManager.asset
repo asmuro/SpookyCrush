@@ -21,6 +21,7 @@ TagManager:
   - DarkGreen
   - Red
   - MediumPurple
+  - DeadlockText
   layers:
   - Default
   - TransparentFX

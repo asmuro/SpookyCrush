@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.BoardFunctionality;
+using Assets.Scripts.Interfaces;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Assets.Scripts.Collapsers
                         columnsToCollapse++;
                     else if (columnsToCollapse > 0)
                     {
-                        Piece currentPiece = board.GetPiece(i, j);
+                        IPiece currentPiece = board.GetPiece(i, j);
                         if (currentPiece != null)
                         {
                             var blankSpaceOffset = 0;
@@ -91,12 +92,13 @@ namespace Assets.Scripts.Collapsers
                 {
                     if (board.GetPiece(i, j) != null && board.GetPiece(i, j).GetIsOffset())
                     {
-                        Piece currentPiece = board.GetPiece(i, j);
-                        currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(),Piece.PIECE_DEPTH));                        
+                        IPiece currentPiece = board.GetPiece(i, j);
+                        currentPiece?.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(),Piece.PIECE_DEPTH));                        
                     }
                 }                
             }
-            yield return new WaitForSeconds(.4f);            
+            yield return new WaitForSeconds(.6f);
+            board.OnCollapsedOffsetPieces();
         }
 
         public override IEnumerator InitialCollapse()
@@ -105,14 +107,12 @@ namespace Assets.Scripts.Collapsers
             {
                 for (int j = 0; j < board.Height; j++)
                 {
-                    Piece currentPiece = board.GetPiece(i, j);
-                    if (currentPiece != null)
-                    {
-                        currentPiece.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Piece.PIECE_DEPTH));
-                    }
+                    IPiece currentPiece = board.GetPiece(i, j);
+                    currentPiece?.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Piece.PIECE_DEPTH));
                 }                
             }
-            yield return new WaitForSeconds(.4f);            
+            yield return new WaitForSeconds(.6f);
+            board.OnInitialCollapsedColumns();
         }
 
         #endregion

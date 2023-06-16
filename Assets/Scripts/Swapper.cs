@@ -1,10 +1,10 @@
 ﻿using Assets.Scripts.BoardFunctionality;
-using System.Collections;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Swapper : MonoBehaviour
+    public class Swapper : MonoBehaviour, ISwapper
     {
         private Board board;
 
@@ -22,9 +22,9 @@ namespace Assets.Scripts
 
         #region Swap
 
-        public void Swap(Direction direction, Piece piece)
+        public void Swap(Direction direction, IPiece piece)
         {
-            if (piece)
+            if (piece != null)
             {
                 switch (direction)
                 {
@@ -44,92 +44,107 @@ namespace Assets.Scripts
             }
         }
 
+        public void Swap(IPiece firstPiece, IPiece secondPiece)
+        {
+            if (firstPiece != null && secondPiece != null)
+            {
+                board.SetPiece(firstPiece.GetColumn(), firstPiece.GetRow(), secondPiece);
+                board.SetPiece(secondPiece.GetColumn(), secondPiece.GetRow() , firstPiece);
+
+                var secondPieceRow = secondPiece.GetRow();
+                var secondPieceColumn = secondPiece.GetColumn();
+
+                secondPiece.SetRowAndColumn(firstPiece.GetRow(), firstPiece.GetColumn());
+                firstPiece.SetRowAndColumn(secondPieceRow, secondPieceColumn);                
+            }
+        }
+
         #region UpSwap
 
-        private void SwapUp(Piece piece)
+        private void SwapUp(IPiece piece)
         {
             if (this.CanSwapUp(piece))
             {
-                var upPiece = GetUpperPiece(piece);
-                if (upPiece)
+                var upperPiece = GetUpperPiece(piece);
+                if (upperPiece != null)
                 {
-                    UpSwapUpdateMatrix(piece, upPiece);
-                    UpSwapPieceColumnAndRow(piece, upPiece);                    
+                    UpSwapUpdateMatrix(piece, upperPiece);
+                    UpSwapPieceColumnAndRow(piece, upperPiece);                    
                 }
             }
         }
 
-        private bool CanSwapUp(Piece piece)
+        private bool CanSwapUp(IPiece piece)
         {
             return piece.GetRow() < board.Height - 1;
         }
 
-        private Piece GetUpperPiece(Piece piece)
+        private IPiece GetUpperPiece(IPiece piece)
         {
             return board.GetPiece(piece.GetColumn(), piece.GetRow() + 1);
         }
 
-        private void UpSwapUpdateMatrix(Piece piece, Piece leftPiece)
+        private void UpSwapUpdateMatrix(IPiece piece, IPiece upperPiece)
         {
-            board.SetPiece(piece.GetColumn(), piece.GetRow(), leftPiece);
+            board.SetPiece(piece.GetColumn(), piece.GetRow(), upperPiece);
             board.SetPiece(piece.GetColumn(), piece.GetRow() + 1, piece);
         }
 
-        private void UpSwapPieceColumnAndRow(Piece piece, Piece leftPiece)
+        private void UpSwapPieceColumnAndRow(IPiece piece, IPiece upperPiece)
         {
             piece.SetRow(piece.GetRow() + 1);
-            leftPiece.SetRow(leftPiece.GetRow() - 1);
+            upperPiece.SetRow(upperPiece.GetRow() - 1);
         }
 
         #endregion
 
         #region DownSwap
 
-        private void SwapDown(Piece piece)
+        private void SwapDown(IPiece piece)
         {
             if (this.CanSwapDown(piece))
             {
-                var downPiece = GetDownPiece(piece);
-                if (downPiece)
+                var lowerPiece = GetDownPiece(piece);
+                if (lowerPiece != null)
                 {
-                    DownSwapUpdateMatrix(piece, downPiece);
-                    DownSwapPieceColumnAndRow(piece, downPiece);                    
+                    DownSwapUpdateMatrix(piece, lowerPiece);
+                    DownSwapPieceColumnAndRow(piece, lowerPiece);                    
                 }
             }
         }
 
-        private bool CanSwapDown(Piece piece)
+        private bool CanSwapDown(IPiece piece)
         {
             return piece.GetRow() > 0;
         }
 
-        private Piece GetDownPiece(Piece piece)
+        private IPiece GetDownPiece(IPiece piece)
         {
             return board.GetPiece(piece.GetColumn(), piece.GetRow() - 1);
         }
 
-        private void DownSwapUpdateMatrix(Piece piece, Piece leftPiece)
+        private void DownSwapUpdateMatrix(IPiece piece, IPiece lowerPiece)
         {            
-            board.SetPiece(piece.GetColumn(), piece.GetRow(), leftPiece);
+            board.SetPiece(piece.GetColumn(), piece.GetRow(), lowerPiece);
             board.SetPiece(piece.GetColumn(), piece.GetRow() - 1, piece);            
         }
 
-        private void DownSwapPieceColumnAndRow(Piece piece, Piece leftPiece)
+        private void DownSwapPieceColumnAndRow(IPiece piece, IPiece lowerPiece)
         {
             piece.SetRow(piece.GetRow() - 1);
-            leftPiece.SetRow(leftPiece.GetRow() + 1);
+            lowerPiece.SetRow(lowerPiece.GetRow() + 1);
         }
 
         #endregion
 
         #region LeftSwap
 
-        private void SwapLeft(Piece piece)
+        private void SwapLeft(IPiece piece)
         {
             if (this.CanSwapLeft(piece))
             {
                 var leftPiece = GetLeftPiece(piece);
-                if (leftPiece)
+                if (leftPiece != null)
                 {
                     LeftSwapUpdateMatrix(piece, leftPiece);
                     LeftSwapPieceColumnAndRow(piece, leftPiece);                    
@@ -137,23 +152,23 @@ namespace Assets.Scripts
             }
         }
 
-        private bool CanSwapLeft(Piece piece)
+        private bool CanSwapLeft(IPiece piece)
         {
             return piece.GetColumn() > 0;            
         }
 
-        private Piece GetLeftPiece(Piece piece)
+        private IPiece GetLeftPiece(IPiece piece)
         {
             return board.GetPiece(piece.GetColumn() - 1, piece.GetRow());            
         }
 
-        private void LeftSwapUpdateMatrix(Piece piece, Piece leftPiece)
+        private void LeftSwapUpdateMatrix(IPiece piece, IPiece leftPiece)
         {
             board.SetPiece(piece.GetColumn(), piece.GetRow(), leftPiece);
             board.SetPiece(piece.GetColumn() - 1, piece.GetRow(), piece);            
         }
 
-        private void LeftSwapPieceColumnAndRow(Piece piece, Piece leftPiece)
+        private void LeftSwapPieceColumnAndRow(IPiece piece, IPiece leftPiece)
         {
             piece.SetColumn(piece.GetColumn() - 1);
             leftPiece.SetColumn(leftPiece.GetColumn() + 1);
@@ -163,12 +178,12 @@ namespace Assets.Scripts
 
         #region RightSwap
 
-        private void SwapRight(Piece piece)
+        private void SwapRight(IPiece piece)
         {            
             if (this.CanSwapRight(piece))
             {
                 var rightPiece = GetRightPiece(piece);
-                if (rightPiece)
+                if (rightPiece != null)
                 {
                     RightSwapUpdateMatrix(piece, rightPiece);
                     RightSwapPieceColumnAndRow(piece, rightPiece);                    
@@ -176,23 +191,23 @@ namespace Assets.Scripts
             }            
         }
 
-        private bool CanSwapRight(Piece piece)
+        private bool CanSwapRight(IPiece piece)
         {
             return piece.GetColumn() < (board.Width - 1);
         }
 
-        private Piece GetRightPiece(Piece piece)
+        private IPiece GetRightPiece(IPiece piece)
         {
             return board.GetPiece(piece.GetColumn() + 1, piece.GetRow());
         }
 
-        private void RightSwapUpdateMatrix(Piece piece, Piece rightPiece)
+        private void RightSwapUpdateMatrix(IPiece piece, IPiece rightPiece)
         {             
             board.SetPiece(piece.GetColumn(), piece.GetRow(), rightPiece);
             board.SetPiece(piece.GetColumn() + 1, piece.GetRow(), piece);           
         }
 
-        private void RightSwapPieceColumnAndRow(Piece piece, Piece rightPiece)
+        private void RightSwapPieceColumnAndRow(IPiece piece, IPiece rightPiece)
         {
             piece.SetColumn(piece.GetColumn() + 1);
             rightPiece.SetColumn(rightPiece.GetColumn() - 1);
