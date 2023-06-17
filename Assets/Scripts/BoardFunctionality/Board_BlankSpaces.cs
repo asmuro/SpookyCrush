@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -19,7 +20,11 @@ namespace Assets.Scripts.BoardFunctionality
             }
         }
 
-        public bool IsBlankSpace(int x, int y) => this.blankSpacesMap[x, y];
-        
+        #region IBoard
+
+        bool IBoard.IsBlankSpace(int x, int y) => this.blankSpacesMap[x, y];
+
+        #endregion
+
     }
 }

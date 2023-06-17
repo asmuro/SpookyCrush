@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class DeadlockService : MonoBehaviour
+    public class DeadlockService : MonoBehaviour, IDeadlockService
     {
         #region Constants
 
@@ -19,6 +19,7 @@ namespace Assets.Scripts
         private IBoard board;
         private PieceMatcher[] pieceMatchers;
         private MessageService messageService;
+        private IPiece lastPieceMatchDetected;
 
         #endregion
 
@@ -27,7 +28,7 @@ namespace Assets.Scripts
         // Use this for initialization
         void Start()
         {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<Board>();
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
             messageService = GameObject.FindFirstObjectByType<MessageService>();
             pieceMatchers = board.PieceMatchers;
         }
@@ -38,35 +39,9 @@ namespace Assets.Scripts
 
         }
 
-        #endregion
+        #endregion        
 
-        /// <summary>
-        /// Detect deadlock moving up and right each piece.
-        /// </summary>
-        /// <returns>True if has deadlocks</returns>
-        public bool HasDeadlock()
-        {
-            for (int i = 0; i < board.Width; i++)
-            {
-                for (int j = 0; j < board.Height; j++)
-                {
-                    if (MovingPieceUpIsMatch(i,j))
-                    {
-                        messageService.HideDeadlockText();
-                        return false;
-                    }                   
-
-                    if (MovingPieceRightIsMatch(i, j))
-                    {
-                        messageService.HideDeadlockText();
-                        return false;
-                    }
-                }
-            }
-            Debug.Log("DEADLOCK");
-            messageService.ShowDeadlockText();
-            return true;
-        }
+        #region Match
 
         private bool MovingPieceUpIsMatch(int row, int column)
         {
@@ -141,6 +116,10 @@ namespace Assets.Scripts
             return false;
         }
 
+        #endregion
+
+        #region Clone
+
         private ILogicPiece[,] CloneAllPieces()
         {
             var allPieces = board.GetAllPieces();
@@ -149,18 +128,24 @@ namespace Assets.Scripts
             {
                 for (int j = 0; j < board.Height; j++)
                 {
-                    clone[i, j] = CopyPiece(allPieces[i,j]);
+                    clone[i, j] = CopyPiece(allPieces[i, j]);
                 }
             }
-            
+
             return clone;
         }
 
         private LogicPiece CopyPiece(IPiece original)
         {
-            return new LogicPiece(original.Name + "clone", original.Tag,
-                original.GetColumn(), original.GetRow());
+            if (original != null)
+            {
+                return new LogicPiece(original.Name + "clone", original.Tag,
+                    original.GetColumn(), original.GetRow());
+            }
+            return null;
         }
+
+        #endregion
 
         #region Swap
 
@@ -260,7 +245,40 @@ namespace Assets.Scripts
 
         #endregion
 
-        
+        #region IDeadlockService
+
+        bool IDeadlockService.HasDeadlock()
+        {
+            for (int i = 0; i < board.Width; i++)
+            {
+                for (int j = 0; j < board.Height; j++)
+                {
+                    if (MovingPieceUpIsMatch(i, j))
+                    {
+                        messageService.HideDeadlockText();
+                        lastPieceMatchDetected = board.GetPiece(i, j);
+                        return false;
+                    }
+
+                    if (MovingPieceRightIsMatch(i, j))
+                    {
+                        messageService.HideDeadlockText();
+                        lastPieceMatchDetected = board.GetPiece(i, j);
+                        return false;
+                    }
+                }
+            }
+            Debug.Log("DEADLOCK");
+            messageService.ShowDeadlockText();
+            return true;
+        }
+
+        IPiece IDeadlockService.GetLastMatchedPiece()
+        {
+            return lastPieceMatchDetected;
+        }
+
+        #endregion
 
     }
 }

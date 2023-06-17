@@ -9,7 +9,11 @@ namespace Assets.Scripts.Interfaces
 {
     public interface IBoard
     {
-        public IPiece[,] GetAllPieces();
+        IPiece[,] GetAllPieces();
+
+        IPiece GetPiece(int i, int j);
+
+        void SetPiece(int i, int j, IPiece piece);
 
         PieceMatcher[] PieceMatchers { get; }
 
@@ -18,5 +22,17 @@ namespace Assets.Scripts.Interfaces
         int Width { get; }
 
         int Height { get; }
+
+        void OnCollapsedColumns();
+
+        void OnCollapsedOffsetPieces();
+
+        void OnInitialCollapsedColumns();
+
+        #region BlankSpaces
+
+        bool IsBlankSpace(int x, int y);
+
+        #endregion
     }
 }

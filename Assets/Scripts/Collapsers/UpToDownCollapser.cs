@@ -10,14 +10,14 @@ namespace Assets.Scripts.Collapsers
     {
         public Vector3 Offset;
 
-        private Board board;        
+        private IBoard board;        
 
         #region Monobehavior
 
         // Use this for initialization
         void Start()
         {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<Board>();
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
         }
 
         #endregion
@@ -93,7 +93,7 @@ namespace Assets.Scripts.Collapsers
                     if (board.GetPiece(i, j) != null && board.GetPiece(i, j).GetIsOffset())
                     {
                         IPiece currentPiece = board.GetPiece(i, j);
-                        currentPiece?.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(),Piece.PIECE_DEPTH));                        
+                        currentPiece?.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(),Constants.PIECE_DEPTH));                        
                     }
                 }                
             }
@@ -108,7 +108,7 @@ namespace Assets.Scripts.Collapsers
                 for (int j = 0; j < board.Height; j++)
                 {
                     IPiece currentPiece = board.GetPiece(i, j);
-                    currentPiece?.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Piece.PIECE_DEPTH));
+                    currentPiece?.SetDestination(new Vector3(currentPiece.GetColumn(), currentPiece.GetRow(), Constants.PIECE_DEPTH));
                 }                
             }
             yield return new WaitForSeconds(.6f);

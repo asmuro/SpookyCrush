@@ -19,15 +19,16 @@ namespace Assets.Scripts.BoardFunctionality
         public ParticleSystem[] ExplosionFX;
         public float DestroyExplosionFXAfterSeconds = 1;
         public Vector2[] BlankSpaces;
-        public DeadlockService DeadlockService;
+        
         public StateMachine StateMachine;
         public ShuffleService ShuffleService;
 
         private IPiece[,] allPieces;
         private bool[,] blankSpacesMap;
         private bool boardRefilled = false;
+        private IDeadlockService deadlockService;
+        private IHintService hintService;
 
-       
 
         // Start is called before the first frame update
         void Start()
@@ -36,10 +37,12 @@ namespace Assets.Scripts.BoardFunctionality
             CreateBlankSpacesMap();
             CreateBoardAndPieces();
             MarkMatches();
-            TimerToStartPlaying.TimerEnded += OnTimerEnded;            
+            TimerToStartPlaying.TimerEnded += OnTimerEnded;
+            deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>();
+            hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>();
         }
 
-        private void OnTimerEnded(object sender, System.EventArgs e)
+        private void OnTimerEnded(object sender, EventArgs e)
         {
             MakeAllPiecesVisibles();
             TimerToStartPlaying.TimerEnded -= OnTimerEnded;
@@ -48,13 +51,14 @@ namespace Assets.Scripts.BoardFunctionality
 
         #region Refresh Board
 
-        private void OnSwapFinished(object sender, System.EventArgs e)
+        private void OnSwapFinished(object sender, EventArgs e)
         {
-            StateMachine.State = Enums.State.Wait;
+            hintService.ResetTime();
+            StateMachine.State = Enums.State.Wait;            
             DestroyAndCollapse();            
         }
 
-        public void OnCollapsedColumns()
+        void IBoard.OnCollapsedColumns()
         {
             if (boardRefilled)
             {
@@ -67,8 +71,9 @@ namespace Assets.Scripts.BoardFunctionality
             }
         }
 
-        public void OnInitialCollapsedColumns()
+        void IBoard.OnInitialCollapsedColumns()
         {
+            hintService.ResetTime();
             CheckDeadlock();            
         }
 
@@ -78,15 +83,16 @@ namespace Assets.Scripts.BoardFunctionality
             CollapseOffsetPieces();                        
         }
 
-        public void OnCollapsedOffsetPieces()
+        void IBoard.OnCollapsedOffsetPieces()
         {
+            hintService.ResetTime();
             DestroyAndCollapse();
             CheckDeadlock();
         }
 
         private void CheckDeadlock()
         {
-            if (DeadlockService.HasDeadlock())
+            if (deadlockService.HasDeadlock())
             {
                 this.StateMachine.State = Enums.State.Wait;
                 StartCoroutine(ShuffleService.ShuffleBoardCo());
@@ -95,7 +101,7 @@ namespace Assets.Scripts.BoardFunctionality
 
         public void OnShuffleFinished()
         {
-            if (DeadlockService.HasDeadlock())
+            if (deadlockService.HasDeadlock())
             {
                 StartCoroutine(ShuffleService.ShuffleBoardCo());
             }
@@ -117,21 +123,7 @@ namespace Assets.Scripts.BoardFunctionality
                 StateMachine.State = Enums.State.Running;
         }
 
-        #endregion        
-
-        #region Accessesors
-
-        public IPiece GetPiece(int i, int j)
-        {
-            return allPieces[i, j];
-        }
-
-        public void SetPiece(int i, int j, IPiece piece)
-        {
-            allPieces[i, j] = piece;
-        }
-
-        #endregion
+        #endregion                
 
         #region IBoard
 
@@ -145,11 +137,21 @@ namespace Assets.Scripts.BoardFunctionality
 
         PieceMatcher[] IBoard.PieceMatchers => this.PieceMatchers;
 
+        IPiece IBoard.GetPiece(int i, int j)
+        {
+            return allPieces[i, j];
+        }
+
+        void IBoard.SetPiece(int i, int j, IPiece piece)
+        {
+            allPieces[i, j] = piece;
+        }
+
         #endregion
 
         public void LaunchDeadlock()
         {
-            this.DeadlockService.HasDeadlock();
+            this.deadlockService.HasDeadlock();
         }
     }
 }

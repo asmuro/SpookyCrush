@@ -18,7 +18,7 @@ namespace Assets.Scripts.Matches
 
         #region Fields
 
-        private Board board;
+        private IBoard board;
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Matches
         
         void Start()
         {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<Board>();
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
         }        
 
         #endregion

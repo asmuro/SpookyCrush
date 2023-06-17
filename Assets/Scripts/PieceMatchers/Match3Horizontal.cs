@@ -9,14 +9,14 @@ namespace Assets.Scripts.Matches
     /// </summary>
     public class Match3Horizontal : PieceMatcher
     {
-        private Board board;
+        private IBoard board;
         private const int FIRST_COLUMN = 0;
         private const int SECOND_COLUMN = 1;
 
         // Use this for initialization
         void Start()
         {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<Board>();
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
         }
 
         // Update is called once per frame
