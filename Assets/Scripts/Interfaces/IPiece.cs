@@ -10,6 +10,8 @@ namespace Assets.Scripts.Interfaces
 
         Vector3 GetPosition();
 
+        Transform GetTransform();
+
         void Destroy();
 
         bool GetIsOffset();

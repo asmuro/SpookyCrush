@@ -6,12 +6,12 @@ namespace Assets.Scripts
 {
     public class Swapper : MonoBehaviour, ISwapper
     {
-        private Board board;
+        private IBoard board;
 
         // Use this for initialization
         void Start()
         {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<Board>();
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
         }
 
         // Update is called once per frame

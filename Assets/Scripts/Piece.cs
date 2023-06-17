@@ -10,7 +10,6 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     #region Fields
 
     public float SwipeAngle = 0;
-    public const float PIECE_DEPTH = -0.1f;
     public float Speed = 100;    
     
     public event EventHandler SwipeFinished;
@@ -56,7 +55,7 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
 
     private Vector3 CreatePositionToRenderTheNewPiece(Vector2 tilePosition)
     {
-        return new Vector3(tilePosition.x, tilePosition.y, PIECE_DEPTH);
+        return new Vector3(tilePosition.x, tilePosition.y, Constants.PIECE_DEPTH);
     }
 
     public Piece Instantiate(Vector2 tilePosition, GameObject parent)
@@ -171,6 +170,11 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
         return transform.position;
     }
 
+    public UnityEngine.Transform GetTransform()
+    {
+        return transform;
+    }
+
     public bool GetIsMatched()
     {
         return isMatched;
@@ -201,7 +205,7 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     {
         this.column = column;
         this.UpdateName();
-        this.SetDestination(new Vector3(this.column, this.transform.position.y, Piece.PIECE_DEPTH));
+        this.SetDestination(new Vector3(this.column, this.transform.position.y, Constants.PIECE_DEPTH));
     }
 
     public int GetRow()
@@ -213,7 +217,7 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     {
         this.row = row;
         this.UpdateName();
-        this.SetDestination(new Vector3(this.transform.position.x, this.row, Piece.PIECE_DEPTH));
+        this.SetDestination(new Vector3(this.transform.position.x, this.row, Constants.PIECE_DEPTH));
     }
 
     private void UpdateName()
@@ -226,7 +230,7 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
         this.column = column;
         this.row = row;
         this.UpdateName();
-        this.SetDestination(new Vector3(this.column, this.row, Piece.PIECE_DEPTH));
+        this.SetDestination(new Vector3(this.column, this.row, Constants.PIECE_DEPTH));
     }
 
     public void SetDestination(Vector3 destination)
