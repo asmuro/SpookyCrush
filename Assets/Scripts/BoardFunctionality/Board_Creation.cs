@@ -6,6 +6,8 @@ namespace Assets.Scripts.BoardFunctionality
 {
     public partial class Board
     {
+        #region Private Methods
+
         private void CreateBoardAndPieces()
         {
             Vector2 tilePosition;
@@ -73,5 +75,13 @@ namespace Assets.Scripts.BoardFunctionality
                 }
             }            
         }
+
+        #endregion
+
+        #region IBoard
+
+
+
+        #endregion
     }
 }

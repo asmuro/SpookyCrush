@@ -9,25 +9,37 @@ namespace Assets.Scripts.Interfaces
 {
     public interface IBoard
     {
+        #region Structure
+
+        int Width { get; }
+
+        int Height { get; }
+
         IPiece[,] GetAllPieces();
 
         IPiece GetPiece(int i, int j);
 
         void SetPiece(int i, int j, IPiece piece);
 
-        PieceMatcher[] PieceMatchers { get; }
+        ILogicPiece[,] CloneAllPieces();
+
+        #endregion
+
+        #region Shuffle
 
         void OnShuffleFinished();
 
-        int Width { get; }
+        #endregion
 
-        int Height { get; }
+        #region Collapse
 
         void OnCollapsedColumns();
 
         void OnCollapsedOffsetPieces();
 
         void OnInitialCollapsedColumns();
+
+        #endregion
 
         #region BlankSpaces
 

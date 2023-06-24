@@ -38,6 +38,6 @@ namespace Assets.Scripts.BoardFunctionality
                     piece.SetVisible();
                 }
             }
-        }
+        }        
     }
 }

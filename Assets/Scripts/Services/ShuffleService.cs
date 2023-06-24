@@ -10,7 +10,7 @@ namespace Assets.Scripts.Services
         #region Fields
 
         private IBoard board;
-        private ISwapper swapper;
+        private ISwapService swapService;
 
         #endregion
 
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Services
         public void Start()
         {
             board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
-            swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<ISwapper>();
+            swapService = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<ISwapService>();
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Services
 
         private void ShuffleCo(IPiece firstPiece, IPiece secondPiece)
         {
-            swapper.Swap(firstPiece, secondPiece);            
+            swapService.Swap(firstPiece, secondPiece);            
         }
 
         #endregion

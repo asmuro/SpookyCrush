@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 namespace Assets.Scripts
 {
@@ -16,6 +17,7 @@ namespace Assets.Scripts
         private int row;
         private bool isMatched;
         private string tag;
+        private string name;
 
         #endregion
 
@@ -23,7 +25,7 @@ namespace Assets.Scripts
 
         public LogicPiece(string name, string tag, int column, int row)
         {
-            this.Name = name;
+            this.name = name;
             this.tag = tag;
             this.column = column;
             this.row = row;
@@ -34,7 +36,7 @@ namespace Assets.Scripts
 
         #region Properties
 
-        public string Name;        
+        string ILogicPiece.Name => this.name;        
 
         string ILogicPiece.Tag => this.tag;
 
@@ -42,22 +44,47 @@ namespace Assets.Scripts
 
         #region Accessors
 
-        public int GetRow() => this.row;
-        
+        int ILogicPiece.GetRow() => this.row;        
 
-        public void SetRow(int row)
+        void ILogicPiece.SetRow(int row)
         {
             this.row = row;
+            this.UpdateName();
         }
 
-        public int GetColumn() => this.column;
+        int ILogicPiece.GetColumn() => this.column;
 
-        public void SetColumn(int column)
+        void ILogicPiece.SetColumn(int column)
         {
             this.column = column;
+            this.UpdateName();
         }
 
-        public bool GetIsMatched() => this.isMatched;                
+        bool ILogicPiece.GetIsMatched() => this.isMatched;
+
+        ILogicPiece ILogicPiece.Copy()
+        {
+            return LogicPiece.CopyLogicPiece(this);
+        }
+
+        private static ILogicPiece CopyLogicPiece(ILogicPiece original)
+        {
+            if (original != null)
+            {
+                return new LogicPiece(original.Name + "clone", original.Tag,
+                    original.GetColumn(), original.GetRow());
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void UpdateName()
+        {
+            this.name = $"{nameof(LogicPiece)} ( {this.column}, {this.row} )";
+        }
 
         #endregion
     }

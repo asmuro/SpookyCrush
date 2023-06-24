@@ -1,24 +1,16 @@
-﻿using Assets.Scripts.BoardFunctionality;
-using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Swapper : MonoBehaviour, ISwapper
+    public class Swapper : MonoBehaviour, ISwapService
     {
         private IBoard board;
 
-        // Use this for initialization
         void Start()
         {
             board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+        }        
 
         #region Swap
 
@@ -74,7 +66,7 @@ namespace Assets.Scripts
             }
         }
 
-        private bool CanSwapUp(IPiece piece)
+        public bool CanSwapUp(ILogicPiece piece)
         {
             return piece.GetRow() < board.Height - 1;
         }
@@ -213,8 +205,8 @@ namespace Assets.Scripts
             rightPiece.SetColumn(rightPiece.GetColumn() - 1);
         }
 
-        #endregion        
-
         #endregion
+
+        #endregion     
     }
 }

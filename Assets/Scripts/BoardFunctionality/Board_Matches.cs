@@ -12,13 +12,7 @@ namespace Assets.Scripts.BoardFunctionality
         {
             foreach (var piece in allPieces)
             {
-                if (piece != null)
-                {
-                    foreach (IPieceMatcher pieceMatcher in PieceMatchers)
-                    {
-                        piece.SetIsMatched(pieceMatcher.IsMatch(piece));
-                    }
-                }
+                piece?.SetIsMatched(matcherService.IsMatch(piece));
             }
         }
 
@@ -55,12 +49,7 @@ namespace Assets.Scripts.BoardFunctionality
 
         private bool WillCreateAMatch(Piece piece)
         {
-            foreach (IPieceMatcher pieceMatcher in PieceMatchers)
-            {
-                if (pieceMatcher.IsMatch(piece))
-                    return true;
-            }
-            return false;
+            return matcherService.IsMatch(piece);            
         }
     }
 }

@@ -1,6 +1,7 @@
 using Assets.Scripts.Collapsers;
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Matches;
+using Assets.Scripts.PieceMatchers;
 using Assets.Scripts.Services;
 using System;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace Assets.Scripts.BoardFunctionality
         public int Height;        
         public BackgroundTile TilePrefab;
         public Piece[] Pieces;
-        public PieceMatcher[] PieceMatchers;
+        
         public Collapser Collapser;
         public Timer TimerToStartPlaying;        
         public ParticleSystem[] ExplosionFX;
@@ -28,18 +29,20 @@ namespace Assets.Scripts.BoardFunctionality
         private bool boardRefilled = false;
         private IDeadlockService deadlockService;
         private IHintService hintService;
+        private IMatchService matcherService;
 
 
         // Start is called before the first frame update
         void Start()
         {
+            deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>();
+            hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>();
+            matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>();
             allPieces = new Piece[Width, Height];
             CreateBlankSpacesMap();
             CreateBoardAndPieces();
             MarkMatches();
-            TimerToStartPlaying.TimerEnded += OnTimerEnded;
-            deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>();
-            hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>();
+            TimerToStartPlaying.TimerEnded += OnTimerEnded;           
         }
 
         private void OnTimerEnded(object sender, EventArgs e)
@@ -58,36 +61,10 @@ namespace Assets.Scripts.BoardFunctionality
             DestroyAndCollapse();            
         }
 
-        void IBoard.OnCollapsedColumns()
-        {
-            if (boardRefilled)
-            {
-                boardRefilled = false;
-                DestroyAndCollapse();                
-            }
-            else
-            {
-                RefillBoard();
-            }
-        }
-
-        void IBoard.OnInitialCollapsedColumns()
-        {
-            hintService.ResetTime();
-            CheckDeadlock();            
-        }
-
         private void OnBoardRefilled()
         {
             MakeAllPiecesVisibles();
-            CollapseOffsetPieces();                        
-        }
-
-        void IBoard.OnCollapsedOffsetPieces()
-        {
-            hintService.ResetTime();
-            DestroyAndCollapse();
-            CheckDeadlock();
+            CollapseOffsetPieces();
         }
 
         private void CheckDeadlock()
@@ -97,20 +74,16 @@ namespace Assets.Scripts.BoardFunctionality
                 this.StateMachine.State = Enums.State.Wait;
                 StartCoroutine(ShuffleService.ShuffleBoardCo());
             }
+            else
+            {
+
+            }
         }
 
         public void OnShuffleFinished()
         {
-            if (deadlockService.HasDeadlock())
-            {
-                StartCoroutine(ShuffleService.ShuffleBoardCo());
-            }
-            else
-            {
-                DestroyAndCollapse();
-                CheckDeadlock();
-                this.StateMachine.State = Enums.State.Running;
-            }
+            DestroyAndCollapse();
+            CheckDeadlock();
         }
 
         private void DestroyAndCollapse()
@@ -133,9 +106,7 @@ namespace Assets.Scripts.BoardFunctionality
         }
 
         int IBoard.Width { get => Width; }
-        int IBoard.Height { get => Height; }
-
-        PieceMatcher[] IBoard.PieceMatchers => this.PieceMatchers;
+        int IBoard.Height { get => Height; }        
 
         IPiece IBoard.GetPiece(int i, int j)
         {
@@ -146,6 +117,20 @@ namespace Assets.Scripts.BoardFunctionality
         {
             allPieces[i, j] = piece;
         }
+
+        ILogicPiece[,] IBoard.CloneAllPieces()
+        {
+            ILogicPiece[,] clone = new ILogicPiece[this.Width, this.Height];
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    clone[i, j] = allPieces[i, j].Copy();
+                }
+            }
+
+            return clone;
+        }        
 
         #endregion
 
