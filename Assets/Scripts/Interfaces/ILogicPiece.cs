@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 
@@ -33,7 +34,11 @@ namespace Assets.Scripts.Interfaces
         /// <param name="column">new column</param>
         void SetColumn(int column);
 
-        string Tag { get; }        
+        string Tag { get; }
+
+        string Name { get; }
+
+        ILogicPiece Copy();        
     }
 }
 

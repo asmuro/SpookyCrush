@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.BoardFunctionality;
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Matches;
+using Assets.Scripts.PieceMatchers;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -16,21 +17,22 @@ namespace Assets.Scripts
 
         #region Fields
 
-        private IBoard board;
-        private PieceMatcher[] pieceMatchers;
+        private IBoard board;        
         private MessageService messageService;
+        private IMatchService matcherService;
         private IPiece lastPieceMatchDetected;
+        private ILogicSwapService logicSwapService;
 
         #endregion
 
         #region  MonoBehaviour
 
-        // Use this for initialization
         void Start()
         {
             board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
+            matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>();
             messageService = GameObject.FindFirstObjectByType<MessageService>();
-            pieceMatchers = board.PieceMatchers;
+            logicSwapService = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<ILogicSwapService>();
         }
 
         // Update is called once per frame
@@ -47,9 +49,9 @@ namespace Assets.Scripts
         {
             ILogicPiece[,] allPiecesClone = CloneAllPieces();
             var currentPiece = allPiecesClone[row, column];
-            if (this.CanSwapUp(currentPiece))
+            if (logicSwapService.CanSwap(Direction.Up, currentPiece))
             {
-                Swap(allPiecesClone, Direction.Up, currentPiece);
+                logicSwapService.Swap(allPiecesClone, Direction.Up, currentPiece);
 
                 if (IsMatch(allPiecesClone, currentPiece))
                 {
@@ -77,9 +79,9 @@ namespace Assets.Scripts
         {
             ILogicPiece[,] allPiecesClone = CloneAllPieces();
             var currentPiece = allPiecesClone[row, column];
-            if (this.CanSwapRight(currentPiece))
+            if (logicSwapService.CanSwap(Direction.Right, currentPiece))
             {
-                Swap(allPiecesClone, Direction.Right, currentPiece);
+                logicSwapService.Swap(allPiecesClone, Direction.Right, currentPiece);
                 
                 if (IsMatch(allPiecesClone, currentPiece))
                 {
@@ -105,15 +107,7 @@ namespace Assets.Scripts
 
         private bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece currentPiece)
         {
-            foreach (var pieceMatcher in pieceMatchers)
-            {
-                if (pieceMatcher.IsMatch(allPiecesClone, currentPiece))
-                {
-                    Debug.Log($"Match Move right i:{currentPiece.GetColumn()} j:{currentPiece.GetRow()} ");
-                    return true;
-                }
-            }
-            return false;
+            return matcherService.IsMatch(allPiecesClone, currentPiece);            
         }
 
         #endregion
@@ -145,105 +139,7 @@ namespace Assets.Scripts
             return null;
         }
 
-        #endregion
-
-        #region Swap
-
-        private void Swap(ILogicPiece[,] allPiecesClone, Direction direction, ILogicPiece piece)
-        {
-            if (piece != null)
-            {
-                switch (direction)
-                {
-                    case Direction.Up:
-                        this.SwapUp(allPiecesClone, piece);
-                        break;                    
-                    default:
-                        this.SwapRight(allPiecesClone, piece);
-                        break;
-                }
-            }
-        }
-
-        #region UpSwap
-
-        private void SwapUp(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
-        {
-            if (this.CanSwapUp(piece))
-            {
-                var upperPiece = GetUpperPiece(allPiecesClone, piece);
-                if (upperPiece != null)
-                {
-                    UpSwapUpdateMatrix(allPiecesClone, piece, upperPiece);
-                    UpSwapPieceColumnAndRow(piece, upperPiece);
-                }
-            }
-        }
-
-        private bool CanSwapUp(ILogicPiece piece)
-        {
-            return piece.GetRow() < board.Height - 1;
-        }
-
-        private ILogicPiece GetUpperPiece(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
-        {
-            return allPiecesClone[piece.GetColumn(), piece.GetRow() + 1];
-        }
-
-        private void UpSwapUpdateMatrix(ILogicPiece[,] allPiecesClone, ILogicPiece piece, ILogicPiece upperPiece)
-        {
-            allPiecesClone[piece.GetColumn(), piece.GetRow()] = upperPiece;
-            allPiecesClone[piece.GetColumn(), piece.GetRow() + 1] = piece;
-        }
-
-        private void UpSwapPieceColumnAndRow(ILogicPiece piece, ILogicPiece upperPiece)
-        {
-            piece.SetRow(piece.GetRow() + 1);
-            upperPiece.SetRow(upperPiece.GetRow() - 1);
-        }
-
-        #endregion
-        
-        #region RightSwap
-
-        private void SwapRight(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
-        {
-            if (this.CanSwapRight(piece))
-            {
-                var rightPiece = GetRightPiece(allPiecesClone, piece);
-                if (rightPiece != null)
-                {
-                    RightSwapUpdateMatrix(allPiecesClone, piece, rightPiece);
-                    RightSwapPieceColumnAndRow(piece, rightPiece);
-                }
-            }
-        }
-
-        private bool CanSwapRight(ILogicPiece piece)
-        {
-            return piece.GetColumn() < (board.Width - 1);
-        }
-
-        private ILogicPiece GetRightPiece(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
-        {
-            return allPiecesClone[piece.GetColumn() + 1, piece.GetRow()];
-        }
-
-        private void RightSwapUpdateMatrix(ILogicPiece[,] allPiecesClone, ILogicPiece piece, ILogicPiece rightPiece)
-        {
-            allPiecesClone[piece.GetColumn(), piece.GetRow()] = rightPiece;
-            allPiecesClone[piece.GetColumn() + 1, piece.GetRow()] =  piece;
-        }
-
-        private void RightSwapPieceColumnAndRow(ILogicPiece piece, ILogicPiece rightPiece)
-        {
-            piece.SetColumn(piece.GetColumn() + 1);
-            rightPiece.SetColumn(rightPiece.GetColumn() - 1);
-        }
-
-        #endregion
-
-        #endregion
+        #endregion                
 
         #region IDeadlockService
 
@@ -253,14 +149,14 @@ namespace Assets.Scripts
             {
                 for (int j = 0; j < board.Height; j++)
                 {
-                    if (MovingPieceUpIsMatch(i, j))
+                    if (matcherService.MovingPieceUpIsMatch(i, j))
                     {
                         messageService.HideDeadlockText();
                         lastPieceMatchDetected = board.GetPiece(i, j);
                         return false;
                     }
 
-                    if (MovingPieceRightIsMatch(i, j))
+                    if (matcherService.MovingPieceRightIsMatch(i, j))
                     {
                         messageService.HideDeadlockText();
                         lastPieceMatchDetected = board.GetPiece(i, j);

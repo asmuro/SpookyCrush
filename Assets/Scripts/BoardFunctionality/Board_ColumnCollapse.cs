@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Interfaces;
+using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.BoardFunctionality
@@ -19,6 +20,36 @@ namespace Assets.Scripts.BoardFunctionality
         private void InitialCollapseColumns()
         {
             StartCoroutine(Collapser.InitialCollapse());
-        }        
+        }
+
+        #region IBoard
+
+        void IBoard.OnCollapsedColumns()
+        {
+            if (boardRefilled)
+            {
+                boardRefilled = false;
+                DestroyAndCollapse();
+            }
+            else
+            {
+                RefillBoard();
+            }
+        }
+
+        void IBoard.OnInitialCollapsedColumns()
+        {
+            hintService.ResetTime();
+            CheckDeadlock();
+        }
+
+        void IBoard.OnCollapsedOffsetPieces()
+        {
+            hintService.ResetTime();
+            DestroyAndCollapse();
+            CheckDeadlock();
+        }
+
+        #endregion
     }
 }

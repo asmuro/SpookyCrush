@@ -1,11 +1,12 @@
 using Assets.Scripts;
 using Assets.Scripts.Enums;
 using Assets.Scripts.Interfaces;
+using Assets.Scripts.PieceMatchers;
 using System;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
+public class Piece : MonoBehaviour, ICloneable, IPiece
 {
     #region Fields
 
@@ -17,6 +18,7 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     public bool isMatched = false;
     private Swiper swiper;
     private Swapper swapper;
+    private IMatchService matcherService;
     private Color originalColor;
     private StateMachine stateMachine;
 
@@ -24,7 +26,9 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     private int row;
     private Vector3 destinationPoint;
     private Vector3 futureDestinationPoint;
-    private bool swapping = false;
+    private bool trueSwap = false;
+    private bool falseSwap = false;
+    private Direction falseSwapDirection;
     private bool isOffset = false;
 
     #endregion
@@ -36,6 +40,7 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     {
         swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
         swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
+        matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>();
         stateMachine = FindObjectOfType<StateMachine>();
         if (futureDestinationPoint == Vector3.zero)
             destinationPoint = transform.position;
@@ -119,8 +124,47 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
     {
         if (!swiper.IsStartAndFinalPositionEquals())
         {
-            swapper.Swap(swiper.GetSwipeDirection(), this);
-            swapping = true;
+            Direction direction = swiper.GetSwipeDirection();            
+            if (IsGoingToBeMatch(direction))
+            {
+                trueSwap = true;
+            }
+            else
+            {
+                falseSwap = true;
+                falseSwapDirection = direction;
+            }
+            swapper.Swap(direction, this);
+        }
+    }
+
+    private bool IsGoingToBeMatch(Direction direction)
+    {
+        switch(direction)
+        {
+            case Direction.Up:
+                return matcherService.MovingPieceUpIsMatch(this.column, this.row);
+            case Direction.Down:
+                return matcherService.MovingPieceDownIsMatch(this.column, this.row);
+            case Direction.Left:
+                return matcherService.MovingPieceLeftIsMatch(this.column, this.row);
+            default:
+                return matcherService.MovingPieceRightIsMatch(this.column, this.row);
+        }                
+    }
+
+    private Direction GetOppsiteFalseSwapDirection(Direction falseSwapDirection)
+    {
+        switch (falseSwapDirection)
+        {
+            case Direction.Up:
+                return Direction.Down;
+            case Direction.Down:
+                return Direction.Up;
+            case Direction.Left:
+                return Direction.Right;
+            default: 
+                return Direction.Left;
         }
     }
 
@@ -144,11 +188,17 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
         }
         else
         {
-            if (swapping)
+            if (trueSwap)
             {
-                swapping = false;
+                trueSwap = false;
                 SwipeFinished?.Invoke(null, EventArgs.Empty);
-            }                
+            }        
+            else if (falseSwap)
+            {
+                falseSwap = false;
+                swapper.Swap(GetOppsiteFalseSwapDirection(falseSwapDirection), this);
+                trueSwap = false;
+            }
         }
     }
 
@@ -266,6 +316,21 @@ public class Piece : MonoBehaviour, ICloneable, IPiece, ILogicPiece
         var cloned = (Piece)this.MemberwiseClone();
         cloned.name = cloned.name + " clone ";
         return cloned;
+    }
+
+    public ILogicPiece Copy()
+    {
+        return CopyLogicPiece(this);
+    }
+
+    private static ILogicPiece CopyLogicPiece(IPiece original)
+    {
+        if (original != null)
+        {
+            return new LogicPiece(original.Name + "clone", original.Tag,
+                original.GetColumn(), original.GetRow());
+        }
+        return null;
     }
 
     #endregion

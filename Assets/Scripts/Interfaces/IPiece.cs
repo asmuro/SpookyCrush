@@ -24,9 +24,7 @@ namespace Assets.Scripts.Interfaces
 
         void SetVisible();
 
-        void SetIsOffset(bool isOffset);
-
-        string Name { get; }
+        void SetIsOffset(bool isOffset);        
     }
 }
 
