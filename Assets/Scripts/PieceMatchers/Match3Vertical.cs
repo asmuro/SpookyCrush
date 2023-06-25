@@ -7,7 +7,7 @@ namespace Assets.Scripts.Matches
     /// <summary>
     /// Match is 3 pieces of the same type vertically aligned, next to each other
     /// </summary>
-    public class Match3Vertical : PieceMatcher
+    public class Match3Vertical : IPieceMatcher
     {
         #region Constants
 
@@ -20,20 +20,11 @@ namespace Assets.Scripts.Matches
 
         private IBoard board;
 
-        #endregion
-
-        #region Monobehaviour
-        
-        void Start()
-        {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
-        }        
-
-        #endregion
+        #endregion        
 
         #region Match3Horizontal
 
-        public override bool IsMatch(ILogicPiece piece)
+        public bool IsMatch(ILogicPiece piece)
         {
             return HasTwoAbove(piece) || HasTwoUnder(piece) || HasOneOnEachLevel(piece);
         }
@@ -84,7 +75,7 @@ namespace Assets.Scripts.Matches
 
         #region Match3Vertical Clone Board        
 
-        public override bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
+        public bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
         {
             return HasTwoAbove(allPiecesClone, piece) || HasTwoUnder(allPiecesClone, piece) || HasOneOnEachLevel(allPiecesClone, piece);
         }
@@ -156,5 +147,10 @@ namespace Assets.Scripts.Matches
         }
 
         #endregion
+
+        public void SetBoard(IBoard board)
+        {
+            this.board = board;
+        }
     }
 }
