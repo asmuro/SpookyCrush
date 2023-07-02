@@ -7,27 +7,15 @@ namespace Assets.Scripts.Matches
     /// <summary>
     /// Match is 3 pieces of the same type horizontal aligned, next to each other
     /// </summary>
-    public class Match3Horizontal : PieceMatcher
+    public class Match3Horizontal : IPieceMatcher
     {
         private IBoard board;
         private const int FIRST_COLUMN = 0;
-        private const int SECOND_COLUMN = 1;
-
-        // Use this for initialization
-        void Start()
-        {
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+        private const int SECOND_COLUMN = 1;       
 
         #region Match3Horizontal
 
-        public override bool IsMatch(ILogicPiece piece)
+        public bool IsMatch(ILogicPiece piece)
         {
             return HasTwoAtTheRight(piece) || HasTwoAtTheLeft(piece) || HasOneOnEachSide(piece);
         }
@@ -98,7 +86,7 @@ namespace Assets.Scripts.Matches
 
         #region Match3Horizontal Clone Board        
 
-        public override bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
+        public bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
         {
             return HasTwoAtTheRight(allPiecesClone, piece) || HasTwoAtTheLeft(allPiecesClone, piece) || HasOneOnEachSide(allPiecesClone, piece);
         }
@@ -144,6 +132,17 @@ namespace Assets.Scripts.Matches
                 return true;
             return piece.GetIsMatched();
         }
+
+        public void SetBoard(IBoard board)
+        {
+            this.board = board;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public int MatchLenght => 3;
 
         #endregion
     }

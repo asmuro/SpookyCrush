@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,18 +10,19 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
-    public class MessageService:MonoBehaviour
+    public class MessageService : MonoBehaviour, IMessageService
     {
         #region Constants
 
         private const string DEADLOCK_TEXT_TAG = "DeadlockText";
-        
+        private const string SCORE_TEXT_TAG = "ScoreText";
 
         #endregion
 
         #region Fields
 
-        private GameObject deadlockText;
+        private TMP_Text deadlockText;
+        private TMP_Text scoreText;
 
         #endregion
 
@@ -28,7 +30,8 @@ namespace Assets.Scripts
 
         public void Start()
         {
-            deadlockText = GameObject.FindGameObjectsWithTag(DEADLOCK_TEXT_TAG)[0];
+            deadlockText = GameObject.FindGameObjectsWithTag(DEADLOCK_TEXT_TAG)[0]?.GetComponent<TMP_Text>() ?? throw new Exception("deadlockText not found");
+            scoreText = GameObject.FindGameObjectsWithTag(SCORE_TEXT_TAG)[0]?.GetComponent<TMP_Text>() ?? throw new Exception("scoreText not found"); ;
         }
 
         #endregion
@@ -37,13 +40,33 @@ namespace Assets.Scripts
 
         public void ShowDeadlockText()
         {
-            deadlockText.GetComponent<TMP_Text>().text = ConstantsToTranslate.DEADLOCK_TEXT;            
+            if (deadlockText != null)
+            {
+                deadlockText.text = ConstantsToTranslate.DEADLOCK_TEXT;
+            }
         }
 
         public void HideDeadlockText()
         {
-            deadlockText.GetComponent<TMP_Text>().text = String.Empty;
+            if (deadlockText != null)
+            {
+                deadlockText.text = String.Empty;
+            }
         }
+
+        public void UpdateScore(int newScore)
+        {
+            if (deadlockText != null)
+            {
+                scoreText.text = newScore.ToString("D3");
+            }
+        }        
+
+        #endregion
+
+        #region Private Methods
+
+
 
         #endregion
     }

@@ -1,5 +1,7 @@
-﻿using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Enums;
+using Assets.Scripts.Interfaces;
 using Assets.Scripts.Matches;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.PieceMatchers
@@ -8,7 +10,8 @@ namespace Assets.Scripts.PieceMatchers
     {
         #region Properties
 
-        public PieceMatcher[] PieceMatchers;
+        public IPieceMatcher[] Matchers;
+        public Matcher[] PiecesMatchers;
 
         #endregion
 
@@ -16,6 +19,7 @@ namespace Assets.Scripts.PieceMatchers
 
         private IBoard board;
         private ILogicSwapService logicSwapService;
+        private bool serviceInitialized = false;
 
         #endregion
 
@@ -23,12 +27,7 @@ namespace Assets.Scripts.PieceMatchers
 
         private void Start()
         {
-            if(PieceMatchers == null || PieceMatchers.Length == 0)
-            {
-                throw new System.Exception("0 piece Matchers configured");
-            }
-            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
-            logicSwapService = GameObject.FindFirstObjectByType<LogicSwapService>().GetComponent<ILogicSwapService>();
+            this.Initialize();   
         }
 
         #endregion
@@ -37,7 +36,8 @@ namespace Assets.Scripts.PieceMatchers
 
         bool IMatchService.IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece)
         {
-            foreach (var pieceMatcher in PieceMatchers)
+            Initialize();
+            foreach (var pieceMatcher in Matchers)
             {
                 if (pieceMatcher.IsMatch(allPiecesClone, piece))
                 {
@@ -50,9 +50,10 @@ namespace Assets.Scripts.PieceMatchers
 
         bool IMatchService.IsMatch(ILogicPiece piece)
         {
+            Initialize();
             if (piece != null)
             {
-                foreach (IPieceMatcher pieceMatcher in PieceMatchers)
+                foreach (IPieceMatcher pieceMatcher in Matchers)
                 {
                     if (pieceMatcher.IsMatch(piece))
                     {
@@ -64,7 +65,7 @@ namespace Assets.Scripts.PieceMatchers
         }
 
         bool IMatchService.MovingPieceUpIsMatch(int row, int column)
-        {
+        {            
             ILogicPiece[,] allPiecesClone = board.CloneAllPieces();
             var currentPiece = allPiecesClone[row, column];
             if (logicSwapService.CanSwap(Direction.Up, currentPiece))
@@ -159,6 +160,11 @@ namespace Assets.Scripts.PieceMatchers
             return false;
         }
 
+        int IMatchService.GetStandardMatchLength()
+        {
+            return Matchers.First().MatchLenght;
+        }
+
         #endregion
 
         #region private methods
@@ -177,6 +183,37 @@ namespace Assets.Scripts.PieceMatchers
             }
 
             return false;
+        }
+
+        private void CreateMatchers()
+        {
+            Matchers = new IPieceMatcher[PiecesMatchers.Length];
+            for (int i = 0; i < PiecesMatchers.Length; i++)
+            {
+                var newMatcher = MatchFactory.Create(PiecesMatchers[i]);
+                newMatcher.SetBoard(board);
+                Matchers[i] = newMatcher;
+            }
+        }
+
+        private void Initialize()
+        {
+            if (!serviceInitialized)
+            {
+                serviceInitialized = true;
+                if (PiecesMatchers == null || PiecesMatchers.Length == 0)
+                {
+                    throw new System.Exception("0 piece PiecesMatchers configured in MatchService");
+                }
+                GetBoard();
+                logicSwapService = GameObject.FindFirstObjectByType<LogicSwapService>().GetComponent<ILogicSwapService>();
+                CreateMatchers();
+            }
+        }
+
+        private void GetBoard()
+        {
+            board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>() ?? throw new System.Exception("No board found in MatchService");
         }
 
 

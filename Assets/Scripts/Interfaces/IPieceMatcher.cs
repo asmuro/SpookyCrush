@@ -12,5 +12,11 @@ namespace Assets.Scripts.Interfaces
         /// <param name="piece">A piece of the puzzle</param>
         /// <returns>If the piece belongs to a match (true) or not(false)</returns>
         bool IsMatch(ILogicPiece piece);
+
+        public abstract bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece);
+
+        void SetBoard(IBoard board);
+
+        int MatchLenght { get; }
     }
 }

@@ -18,7 +18,7 @@ namespace Assets.Scripts
         #region Fields
 
         private IBoard board;        
-        private MessageService messageService;
+        private IMessageService messageService;
         private IMatchService matcherService;
         private IPiece lastPieceMatchDetected;
         private ILogicSwapService logicSwapService;
@@ -31,7 +31,7 @@ namespace Assets.Scripts
         {
             board = GameObject.FindGameObjectWithTag(Constants.BOARD_TAG).GetComponent<IBoard>();
             matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>();
-            messageService = GameObject.FindFirstObjectByType<MessageService>();
+            messageService = GameObject.FindFirstObjectByType<MessageService>().GetComponent<IMessageService>(); ;
             logicSwapService = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<ILogicSwapService>();
         }
 

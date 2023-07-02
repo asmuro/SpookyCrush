@@ -29,15 +29,17 @@ namespace Assets.Scripts.BoardFunctionality
         private bool boardRefilled = false;
         private IDeadlockService deadlockService;
         private IHintService hintService;
-        private IMatchService matcherService;
+        private IMatchService matchService;
+        private IMatchCounterService matchCounterService;
 
 
         // Start is called before the first frame update
         void Start()
         {
-            deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>();
-            hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>();
-            matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>();
+            deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>() ?? throw new Exception("IDeadlockService not found");
+            hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>() ?? throw new Exception("IHintService not found");
+            matchService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");
+            matchCounterService = GameObject.FindFirstObjectByType<MatchCounterService>().GetComponent<IMatchCounterService>() ?? throw new Exception("IMatchCounterService not found");
             allPieces = new Piece[Width, Height];
             CreateBlankSpacesMap();
             CreateBoardAndPieces();

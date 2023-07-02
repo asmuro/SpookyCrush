@@ -12,7 +12,7 @@ namespace Assets.Scripts.BoardFunctionality
         {
             foreach (var piece in allPieces)
             {
-                piece?.SetIsMatched(matcherService.IsMatch(piece));
+                piece?.SetIsMatched(matchService.IsMatch(piece));
             }
         }
 
@@ -20,6 +20,7 @@ namespace Assets.Scripts.BoardFunctionality
         {
             IPiece piece;
             _matchesDestroyed = false;
+            int piecesDestroyed = 0;
 
             for (int i = 0; i < Width; i++)
             {
@@ -32,9 +33,11 @@ namespace Assets.Scripts.BoardFunctionality
                         piece.Destroy();
                         allPieces[i, j] = null;
                         _matchesDestroyed = true;
+                        piecesDestroyed++;
                     }
                 }
             }
+            matchCounterService.AddMatch(piecesDestroyed);
         }
 
         IEnumerator InstatiateExplosionFXCo(Vector3 point)
@@ -49,7 +52,7 @@ namespace Assets.Scripts.BoardFunctionality
 
         private bool WillCreateAMatch(Piece piece)
         {
-            return matcherService.IsMatch(piece);            
+            return matchService.IsMatch(piece);            
         }
     }
 }
