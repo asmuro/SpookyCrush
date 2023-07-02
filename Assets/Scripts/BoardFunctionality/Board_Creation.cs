@@ -16,7 +16,7 @@ namespace Assets.Scripts.BoardFunctionality
                 for (int j = 0; j < Height; j++)
                 {
                     tilePosition = new Vector2(i, j);
-                    //CreateTile(tilePosition, i, j);
+                    CreateTile(tilePosition, i, j);
                     if (!this.blankSpacesMap[i,j])
                         CreatePieceWithoutMatches(tilePosition);                    
                 }
