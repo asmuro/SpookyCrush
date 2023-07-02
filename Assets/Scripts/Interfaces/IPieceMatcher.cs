@@ -16,5 +16,7 @@ namespace Assets.Scripts.Interfaces
         public abstract bool IsMatch(ILogicPiece[,] allPiecesClone, ILogicPiece piece);
 
         void SetBoard(IBoard board);
+
+        int MatchLenght { get; }
     }
 }

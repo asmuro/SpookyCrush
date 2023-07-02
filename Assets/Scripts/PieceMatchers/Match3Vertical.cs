@@ -22,7 +22,7 @@ namespace Assets.Scripts.Matches
 
         #endregion        
 
-        #region Match3Horizontal
+        #region Match3Vertical
 
         public bool IsMatch(ILogicPiece piece)
         {
@@ -148,9 +148,16 @@ namespace Assets.Scripts.Matches
 
         #endregion
 
+
+        #region public Methods
+
         public void SetBoard(IBoard board)
         {
             this.board = board;
         }
+
+        public int MatchLenght => 3;
+
+        #endregion
     }
 }

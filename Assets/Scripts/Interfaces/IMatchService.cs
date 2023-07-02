@@ -16,5 +16,7 @@ namespace Assets.Scripts.Interfaces
         bool MovingPieceLeftIsMatch(int row, int column);
         bool MovingPieceRightIsMatch(int row, int column);
 
+
+        int GetStandardMatchLength();
     }
 }

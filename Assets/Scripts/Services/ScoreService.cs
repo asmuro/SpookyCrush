@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using UnityEngine;
 using Assets.Scripts.Score;
 using System.Diagnostics;
+using Assets.Scripts.PieceMatchers;
+using System.Text.RegularExpressions;
 
 namespace Assets.Scripts.Services
 {
@@ -17,12 +19,16 @@ namespace Assets.Scripts.Services
         private int score;
         Stopwatch comboWatch;
         private IMessageService messageService;
+        private IMatchService matchService;
+        private int standardMatchLenght;
 
         #endregion
 
         #region Properties
 
         public float TimeBetweenCombo = 1f;
+        public int simplePieceScore = 3;
+        public int extraPieceScore = 1;
 
         #endregion
 
@@ -30,7 +36,9 @@ namespace Assets.Scripts.Services
 
         private void Start()
         {
-            messageService = GameObject.FindFirstObjectByType<MessageService>().GetComponent<IMessageService>();
+            messageService = GameObject.FindFirstObjectByType<MessageService>().GetComponent<IMessageService>() ?? throw new Exception("IMessageService not found");
+            matchService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");
+            standardMatchLenght = matchService.GetStandardMatchLength();
             messageService.UpdateScore(score);
         }
 
@@ -38,11 +46,19 @@ namespace Assets.Scripts.Services
 
         #region Methods
 
-        public void UpdateScore(List<MatchData> matchData)
+        public void UpdateScore(List<MatchData> matchsData)
         {
-            foreach (var match in matchData)
+            foreach (var match in matchsData)
             {
-                score += match.PiecesDestroyed;
+                if(IsStandardMatch(match.PiecesDestroyed))
+                {
+                    score += match.PiecesDestroyed;
+                }
+                else if ((match.PiecesDestroyed % standardMatchLenght) == 0)
+                {
+                    score += (match.PiecesDestroyed + GetExtraPieceScore(match.PiecesDestroyed)) * GetMultiplyPieceScore(match.PiecesDestroyed);
+                }
+                
             }
             messageService.UpdateScore(score);
         }
@@ -51,13 +67,20 @@ namespace Assets.Scripts.Services
 
         #region Private methods
 
-        //private bool IsCombo()
-        //{
-            //ShowCombo
-            //Store score to multiply after combos finished
-        //}
+        private bool IsStandardMatch(int piecesDestroyed)
+        {
+            return piecesDestroyed == standardMatchLenght;
+        } 
 
+        private int GetExtraPieceScore(int piecesDestroyed)
+        {
+            return (piecesDestroyed % standardMatchLenght) * extraPieceScore;
+        }
 
+        private int GetMultiplyPieceScore(int piecesDestroyed)
+        {
+            return (piecesDestroyed / standardMatchLenght);
+        }
 
         #endregion
     }

@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Enums;
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Matches;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.PieceMatchers
@@ -157,6 +158,11 @@ namespace Assets.Scripts.PieceMatchers
             }
 
             return false;
+        }
+
+        int IMatchService.GetStandardMatchLength()
+        {
+            return Matchers.First().MatchLenght;
         }
 
         #endregion

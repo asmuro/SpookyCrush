@@ -139,5 +139,11 @@ namespace Assets.Scripts.Matches
         }
 
         #endregion
+
+        #region Public Methods
+
+        public int MatchLenght => 3;
+
+        #endregion
     }
 }
