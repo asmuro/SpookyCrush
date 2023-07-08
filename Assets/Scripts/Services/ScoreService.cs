@@ -17,7 +17,7 @@ namespace Assets.Scripts.Services
         #region Fields
 
         private int score;
-        Stopwatch comboWatch;
+        Stopwatch comboWatch;        
         private IMessageService messageService;
         private IMatchService matchService;
         private int standardMatchLenght;
@@ -37,7 +37,7 @@ namespace Assets.Scripts.Services
         private void Start()
         {
             messageService = GameObject.FindFirstObjectByType<MessageService>().GetComponent<IMessageService>() ?? throw new Exception("IMessageService not found");
-            matchService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");
+            matchService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");            
             standardMatchLenght = matchService.GetStandardMatchLength();
             messageService.UpdateScore(score);
         }
@@ -60,7 +60,12 @@ namespace Assets.Scripts.Services
                 }
                 
             }
-            messageService.UpdateScore(score);
+            messageService.UpdateScore(score);            
+        }
+
+        public int GetScore()
+        {
+            return this.score;
         }
 
         #endregion
