@@ -127,7 +127,14 @@ namespace Assets.Scripts.BoardFunctionality
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    clone[i, j] = allPieces[i, j].Copy();
+                    if (allPieces[i, j] != null)
+                    {
+                        clone[i, j] = allPieces[i, j].Copy();
+                    }
+                    else
+                    {
+                        clone[i, j] = null;
+                    }
                 }
             }
 

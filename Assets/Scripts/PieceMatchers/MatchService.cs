@@ -162,6 +162,10 @@ namespace Assets.Scripts.PieceMatchers
 
         int IMatchService.GetStandardMatchLength()
         {
+            if (Matchers == null)
+            {
+                Initialize();
+            }
             return Matchers.First().MatchLenght;
         }
 
