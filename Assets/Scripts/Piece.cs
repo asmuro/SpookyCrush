@@ -2,7 +2,9 @@ using Assets.Scripts;
 using Assets.Scripts.Enums;
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.PieceMatchers;
+using Assets.Scripts.Services;
 using System;
+using System.Collections;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -10,20 +12,13 @@ public class Piece : MonoBehaviour, ICloneable, IPiece
 {
     #region Fields
 
-    public float SwipeAngle = 0;
-    public float Speed = 100;    
-    
-    public event EventHandler SwipeFinished;
-
-    public bool isMatched = false;
     private Swiper swiper;
-    private Swapper swapper;
-    private IMatchService matcherService;
-    private Color originalColor;
+    private Swapper swapper;        
     private StateMachine stateMachine;
 
     private int column;
     private int row;
+    private Color originalColor;
     private Vector3 destinationPoint;
     private Vector3 futureDestinationPoint;
     private bool trueSwap = false;
@@ -31,17 +26,30 @@ public class Piece : MonoBehaviour, ICloneable, IPiece
     private Direction falseSwapDirection;
     private bool isOffset = false;
 
+    private IMatchService matcherService;
+    private ISoundService soundService;
+
+    #endregion
+
+    #region Properties
+
+    public ParticleSystem[] ExplosionFX;
+    public float SwipeAngle = 0;
+    public float Speed = 100;
+    public event EventHandler SwipeFinished;
+    public bool isMatched = false;
+
     #endregion
 
     #region MonoBehaviour
 
-    // Start is called before the first frame update
     void Start()
     {
-        swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>();
-        swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>();
-        matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>();
-        stateMachine = FindObjectOfType<StateMachine>();
+        swiper = GameObject.FindGameObjectWithTag(Constants.SWIPER_TAG).GetComponent<Swiper>() ?? throw new Exception("Swiper not found");
+        swapper = GameObject.FindGameObjectWithTag(Constants.SWAPPER_TAG).GetComponent<Swapper>() ?? throw new Exception("Swapper not found");
+        matcherService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");
+        soundService = GameObject.FindFirstObjectByType<SoundService>().GetComponent<ISoundService>() ?? throw new Exception("ISoundService not found");
+        stateMachine = FindObjectOfType<StateMachine>() ?? throw new Exception("StateMachine not found");
         if (futureDestinationPoint == Vector3.zero)
             destinationPoint = transform.position;
         else
@@ -208,7 +216,19 @@ public class Piece : MonoBehaviour, ICloneable, IPiece
 
     public void Destroy()
     {
+        StartCoroutine(InstatiateExplosionFXCo(this.GetPosition()));
+        soundService.PlayRandomDestroyNoise();
         Destroy(this.gameObject);
+    }
+
+    IEnumerator InstatiateExplosionFXCo(Vector3 point)
+    {
+        ParticleSystem particle = ExplosionFX[UnityEngine.Random.Range(0, ExplosionFX.Length)];
+        var rightFX = Instantiate(particle, new Vector3(point.x, point.y, -1), Quaternion.identity);
+        rightFX.Play();
+
+        yield return new WaitForSeconds(1f);
+        Destroy(rightFX);
     }
 
     #endregion

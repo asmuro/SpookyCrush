@@ -10,19 +10,7 @@ namespace Assets.Scripts.BoardFunctionality
 {
     public partial class Board : MonoBehaviour, IBoard
     {
-        public int Width;
-        public int Height;        
-        public BackgroundTile TilePrefab;
-        public Piece[] Pieces;
-        
-        public Collapser Collapser;
-        public Timer TimerToStartPlaying;        
-        public ParticleSystem[] ExplosionFX;
-        public float DestroyExplosionFXAfterSeconds = 1;
-        public Vector2[] BlankSpaces;
-        
-        public StateMachine StateMachine;
-        public ShuffleService ShuffleService;
+        #region Fields
 
         private IPiece[,] allPieces;
         private bool[,] blankSpacesMap;
@@ -32,20 +20,43 @@ namespace Assets.Scripts.BoardFunctionality
         private IMatchService matchService;
         private IMatchCounterService matchCounterService;
 
+        #endregion
 
-        // Start is called before the first frame update
+        #region Properties
+
+        public int Width;
+        public int Height;
+        public BackgroundTile TilePrefab;
+        public Piece[] Pieces;
+
+        public Collapser Collapser;
+        public Timer TimerToStartPlaying;
+
+        public float DestroyExplosionFXAfterSeconds = 1;
+        public Vector2[] BlankSpaces;
+
+        public StateMachine StateMachine;
+        public ShuffleService ShuffleService;
+
+        #endregion
+
+
+        #region Monobehaviour
+
         void Start()
         {
             deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>() ?? throw new Exception("IDeadlockService not found");
             hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>() ?? throw new Exception("IHintService not found");
             matchService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");
-            matchCounterService = GameObject.FindFirstObjectByType<MatchCounterService>().GetComponent<IMatchCounterService>() ?? throw new Exception("IMatchCounterService not found");
+            matchCounterService = GameObject.FindFirstObjectByType<MatchCounterService>().GetComponent<IMatchCounterService>() ?? throw new Exception("IMatchCounterService not found");            
             allPieces = new Piece[Width, Height];
             CreateBlankSpacesMap();
             CreateBoardAndPieces();
             MarkMatches();
             TimerToStartPlaying.TimerEnded += OnTimerEnded;           
         }
+
+        #endregion
 
         private void OnTimerEnded(object sender, EventArgs e)
         {
