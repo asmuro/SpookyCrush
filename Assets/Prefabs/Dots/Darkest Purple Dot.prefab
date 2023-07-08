@@ -98,8 +98,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5379050cbd96818498f9dcd6ecb30250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ExplosionFX:
+  - {fileID: 7401808384222972023, guid: cde841f2123da0c46b350ea2fa2a3da5, type: 3}
+  - {fileID: 5659709154401043336, guid: 54310770e3c28cb4994afc175dc5bfc0, type: 3}
+  - {fileID: 7440055915817663599, guid: 079420ce3e39efe49bd9214c3214d1a4, type: 3}
   SwipeAngle: 0
   Speed: 35
+  isMatched: 0
 --- !u!58 &2948681021944967452
 CircleCollider2D:
   m_ObjectHideFlags: 0

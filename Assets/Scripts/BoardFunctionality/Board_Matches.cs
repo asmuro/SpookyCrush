@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Interfaces;
+using Assets.Scripts.Services;
 using System.Collections;
 using UnityEngine;
 
@@ -6,8 +7,12 @@ namespace Assets.Scripts.BoardFunctionality
 {
     public partial class Board
     {
+        #region Fields
+
         private bool _matchesDestroyed = false;
-        
+
+        #endregion
+
         private void MarkMatches()
         {
             foreach (var piece in allPieces)
@@ -28,8 +33,7 @@ namespace Assets.Scripts.BoardFunctionality
                 {
                     piece = allPieces[i, j];
                     if (piece != null && piece.GetIsMatched())
-                    {
-                        StartCoroutine(InstatiateExplosionFXCo(piece.GetPosition()));
+                    {                        
                         piece.Destroy();
                         allPieces[i, j] = null;
                         _matchesDestroyed = true;
@@ -39,16 +43,6 @@ namespace Assets.Scripts.BoardFunctionality
             }
             matchCounterService.AddMatch(piecesDestroyed);
         }
-
-        IEnumerator InstatiateExplosionFXCo(Vector3 point)
-        {
-            ParticleSystem particle = ExplosionFX[Random.Range(0, ExplosionFX.Length)];
-            var rightFX = Instantiate(particle, new Vector3(point.x, point.y, -1), Quaternion.identity);
-            rightFX.Play();            
-            
-            yield return new WaitForSeconds(1f);
-            Destroy(rightFX);
-        }        
 
         private bool WillCreateAMatch(Piece piece)
         {

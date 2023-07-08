@@ -54,11 +54,10 @@ namespace Assets.Scripts.Services
                 {
                     score += match.PiecesDestroyed;
                 }
-                else if ((match.PiecesDestroyed % standardMatchLenght) == 0)
+                else
                 {
                     score += (match.PiecesDestroyed + GetExtraPieceScore(match.PiecesDestroyed)) * GetMultiplyPieceScore(match.PiecesDestroyed);
-                }
-                
+                }                
             }
             messageService.UpdateScore(score);            
         }

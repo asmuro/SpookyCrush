@@ -23,6 +23,7 @@ TagManager:
   - MediumPurple
   - DeadlockText
   - ScoreText
+  - SoundManager
   layers:
   - Default
   - TransparentFX
