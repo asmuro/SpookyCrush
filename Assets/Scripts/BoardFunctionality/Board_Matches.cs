@@ -35,13 +35,18 @@ namespace Assets.Scripts.BoardFunctionality
                     if (piece != null && piece.GetIsMatched())
                     {                        
                         piece.Destroy();
+                        goalService.CompareGoal(piece.Tag);
                         allPieces[i, j] = null;
                         _matchesDestroyed = true;
                         piecesDestroyed++;
+                        
                     }
                 }
             }
-            matchCounterService.AddMatch(piecesDestroyed);
+            if (piecesDestroyed > 0)
+            {
+                matchCounterService.AddMatch(piecesDestroyed);
+            }            
         }
 
         private bool WillCreateAMatch(Piece piece)

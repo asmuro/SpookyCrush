@@ -19,6 +19,7 @@ namespace Assets.Scripts.BoardFunctionality
         private IHintService hintService;
         private IMatchService matchService;
         private IMatchCounterService matchCounterService;
+        private IGoalService goalService;
 
         #endregion
 
@@ -48,7 +49,8 @@ namespace Assets.Scripts.BoardFunctionality
             deadlockService = GameObject.FindFirstObjectByType<DeadlockService>().GetComponent<IDeadlockService>() ?? throw new Exception("IDeadlockService not found");
             hintService = GameObject.FindFirstObjectByType<HintService>().GetComponent<IHintService>() ?? throw new Exception("IHintService not found");
             matchService = GameObject.FindFirstObjectByType<MatchService>().GetComponent<IMatchService>() ?? throw new Exception("IMatchService not found");
-            matchCounterService = GameObject.FindFirstObjectByType<MatchCounterService>().GetComponent<IMatchCounterService>() ?? throw new Exception("IMatchCounterService not found");            
+            matchCounterService = GameObject.FindFirstObjectByType<MatchCounterService>().GetComponent<IMatchCounterService>() ?? throw new Exception("IMatchCounterService not found");
+            goalService = GameObject.FindFirstObjectByType<GoalService>().GetComponent<IGoalService>() ?? throw new Exception("IGoalService not found");
             allPieces = new Piece[Width, Height];
             CreateBlankSpacesMap();
             CreateBoardAndPieces();
