@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Score;
+﻿using Assets.Scripts.Interfaces;
+using Assets.Scripts.Score;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,59 +9,112 @@ using UnityEngine;
 
 namespace Assets.Scripts.Services
 {
-    public class GoalService : MonoBehaviour
+    public class GoalService : MonoBehaviour, IGoalService
     {
+        #region Fields
+
+        private List<GoalPanel> currentGoalsPanel = new List<GoalPanel>();
+        private int goalsCompleted = 0;
+        private bool goalReached = false;
+
+        #endregion
+
         #region Properties
 
         public BlankGoal[] LevelGoals;
         public GameObject goalPrefab;
         public GameObject goalIntroParent;
-        public GameObject goalGameParent;
+        public GameObject goalGameParent;        
 
-        #endregion
+        #endregion        
 
         #region MonoBehaviour
 
-        private void Start()
+        void Start()
         {
-            SetupIntroGoals();
+            SetupGoals();
+        }
+
+        void Update()
+        {
+         
         }
 
         #endregion
 
-        #region Public Methods
+        #region Public Methods        
 
-        public void SetupIntroGoals()
-        {
-            for (int i=0; i<LevelGoals.Length; i++)
+        public void UpdateGoals()
+        {   
+            foreach(var levelGoal in LevelGoals)
             {
-                SetGoalIntroPanelImageAndText(i);
-                SetGoalGamePanelImageAndText(i);
+                if (!levelGoal.GoalCompleted)
+                {
+                    if (levelGoal.NumberCollected >= levelGoal.NumberNeeded)
+                    {
+                        goalsCompleted++;
+                        currentGoalsPanel.First(c => c.GoalId == levelGoal.GoalId).SetTextGoal($"{levelGoal.NumberNeeded}/{levelGoal.NumberNeeded}");
+                        levelGoal.GoalCompleted = true;
+                    }
+                    else
+                    {
+                        currentGoalsPanel.First(c => c.GoalId == levelGoal.GoalId).SetTextGoal($"{levelGoal.NumberCollected}/{levelGoal.NumberNeeded}");
+                    }
+                }
             }
+
+            if(!goalReached && goalsCompleted >= LevelGoals.Length)
+            {
+                goalReached = true;
+                Debug.Log("You won!");
+            }
+        }
+
+        public void CompareGoal(string goalToCompare)
+        {
+            foreach(var levelGoal in LevelGoals)
+            {
+                if (levelGoal.MatchValue.Equals(goalToCompare))
+                {
+                    levelGoal.NumberCollected++;
+                    UpdateGoals();
+                }
+            }            
         }
 
         #endregion
 
         #region Private Methods
 
-        private void SetGoalIntroPanelImageAndText(int levelGoalIndex)
+        private void SetupGoals()
         {
-            GameObject goal = Instantiate(goalPrefab, goalIntroParent.transform.position, Quaternion.identity);
-            goal.transform.SetParent(goalIntroParent.transform);
-            GoalPanel goalPanel = goal.GetComponent<GoalPanel>();
-            goalPanel.Sprite = LevelGoals[levelGoalIndex].goalSprite;
-            goalPanel.String = $"0/{LevelGoals[levelGoalIndex].numberNeeded}";
-            goalPanel.Image.preserveAspect = true;
+            for (int i = 0; i < LevelGoals.Length; i++)
+            {
+                SetGoalIntroPanelImageAndText(LevelGoals[i]);
+                SetGoalGamePanelImageAndText(LevelGoals[i]);
+            }
         }
 
-        private void SetGoalGamePanelImageAndText(int levelGoalIndex)
+        private void SetGoalIntroPanelImageAndText(BlankGoal blankGoal)
+        {            
+            GameObject UIGoal = CreateUIGoal(goalIntroParent);
+            GoalPanel goalPanel = UIGoal.GetComponent<GoalPanel>();
+            goalPanel.Initialize(blankGoal.GoalId, blankGoal.GoalSprite, $"0/{blankGoal.NumberNeeded}");            
+        }
+
+        private void SetGoalGamePanelImageAndText(BlankGoal blankGoal)
+        {            
+            GameObject UIGoal = CreateUIGoal(goalGameParent);
+            GoalPanel goalPanel = UIGoal.GetComponent<GoalPanel>();
+            goalPanel.Initialize(blankGoal.GoalId, blankGoal.GoalSprite, $"0/{blankGoal.NumberNeeded}");                        
+            currentGoalsPanel.Add(goalPanel);
+        }       
+        
+        private GameObject CreateUIGoal(GameObject parent)
         {
-            GameObject gameGoal = Instantiate(goalPrefab, goalGameParent.transform.position, Quaternion.identity);
-            gameGoal.transform.SetParent(goalGameParent.transform);
-            GoalPanel goalPanel2 = gameGoal.GetComponent<GoalPanel>();
-            goalPanel2.Sprite = LevelGoals[levelGoalIndex].goalSprite;
-            goalPanel2.String = $"0/{LevelGoals[levelGoalIndex].numberNeeded}";
-            goalPanel2.Image.preserveAspect = true;
+            GameObject goal = Instantiate(goalPrefab, parent.transform.position, Quaternion.identity);
+            goal.transform.SetParent(parent.transform);
+            return goal;
         }
 
         #endregion

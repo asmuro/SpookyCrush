@@ -11,12 +11,16 @@ namespace Assets.Scripts.Score
 {
     public class GoalPanel : MonoBehaviour
     {
+        #region Fields
+        
+
+        #endregion
+
         #region Properties
 
-        public Image Image;
-        public Sprite Sprite;
-        public TMP_Text Text;
-        public string String;
+        public Image Image;        
+        public TMP_Text Text;       
+        public Guid GoalId;
 
         #endregion
 
@@ -24,17 +28,29 @@ namespace Assets.Scripts.Score
 
         void Start()
         {
-            SetSpriteAndString();
+            
         }      
 
         #endregion
 
         #region Private Methods
+       
 
-        private void SetSpriteAndString()
+        #endregion
+
+        #region Public Methods
+
+        public void Initialize(Guid goalId, Sprite sprite, string goalText)
         {
-            this.Image.sprite = this.Sprite;
-            this.Text.text = this.String;
+            this.Image.sprite = sprite;
+            this.Text.text = goalText;
+            this.Image.preserveAspect = true;
+            this.GoalId = goalId;
+        }
+
+        public void SetTextGoal(string goalText)
+        {
+            this.Text.text = goalText;
         }
 
         #endregion

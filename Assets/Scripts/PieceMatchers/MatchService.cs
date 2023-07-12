@@ -41,7 +41,7 @@ namespace Assets.Scripts.PieceMatchers
             {
                 if (pieceMatcher.IsMatch(allPiecesClone, piece))
                 {
-                    Debug.Log($"Match Move right i:{piece.GetColumn()} j:{piece.GetRow()} ");
+                    //Debug.Log($"Match Move right i:{piece.GetColumn()} j:{piece.GetRow()} ");
                     return true;
                 }
             }
@@ -68,7 +68,7 @@ namespace Assets.Scripts.PieceMatchers
         {            
             ILogicPiece[,] allPiecesClone = board.CloneAllPieces();
             var currentPiece = allPiecesClone[row, column];
-            if (logicSwapService.CanSwap(Direction.Up, currentPiece))
+            if (currentPiece != null && logicSwapService.CanSwap(Direction.Up, currentPiece))
             {
                 logicSwapService.Swap(allPiecesClone, Direction.Up, currentPiece);
 
@@ -79,7 +79,7 @@ namespace Assets.Scripts.PieceMatchers
             }
             else
             {
-                if ((this as IMatchService).IsMatch(allPiecesClone, currentPiece))
+                if (currentPiece != null && (this as IMatchService).IsMatch(allPiecesClone, currentPiece))
                 {
                     return true;
                 }
@@ -140,7 +140,7 @@ namespace Assets.Scripts.PieceMatchers
         {
             ILogicPiece[,] allPiecesClone = board.CloneAllPieces();
             var currentPiece = allPiecesClone[row, column];
-            if (logicSwapService.CanSwap(Direction.Right, currentPiece))
+            if (currentPiece != null && logicSwapService.CanSwap(Direction.Right, currentPiece))
             {
                 logicSwapService.Swap(allPiecesClone, Direction.Right, currentPiece);
 
@@ -151,7 +151,7 @@ namespace Assets.Scripts.PieceMatchers
             }
             else
             {
-                if ((this as IMatchService).IsMatch(allPiecesClone, currentPiece))
+                if (currentPiece != null && (this as IMatchService).IsMatch(allPiecesClone, currentPiece))
                 {
                     return true;
                 }

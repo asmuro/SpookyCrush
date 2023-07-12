@@ -12,10 +12,12 @@ namespace Assets.Scripts.Score
     {
         #region Properties
 
-        public int numberNeeded;
-        public int numberCollected;
-        public Sprite goalSprite;
-        public string matchValue;
+        public int NumberNeeded;
+        public int NumberCollected;
+        public Sprite GoalSprite;
+        public string MatchValue;
+        public Guid GoalId = Guid.NewGuid();
+        public bool GoalCompleted = false;
 
         #endregion
     }

@@ -74,12 +74,12 @@ namespace Assets.Scripts.Matches
 
         private bool IsPieceInTheLastColumn(ILogicPiece piece)
         {
-            return piece.GetColumn() == board.Width - 1;
+            return piece?.GetColumn() == board.Width - 1;
         }
 
         private bool IsPieceInTheNextToLastColumn(ILogicPiece piece)
         {
-            return piece.GetColumn() == board.Width - 2;
+            return piece?.GetColumn() == board.Width - 2;
         }
 
         #endregion
